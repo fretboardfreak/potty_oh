@@ -2,15 +2,21 @@
 Potty-Oh: Python Audio Programming Toolset
 ==========================================
 
-:author: Curtis Sand
+:author: Curtis Sand (a.k.a. fret, fretboardfreak)
 :date: 160430
 
-Potty-Oh is a play on the phonetic pronunciation of the terms "P-Audio".
-Libraries already exist with the unclever names pyaudio and paudio so I went
-with something just a little different.
+**Potty-Oh**: **P**\ython **Audio**
+
+:mirrors:
+    - https://github.com/fretboardfreak/potty_oh
+    - https://bitbucket.org/fret/potty_oh
 
 Potty-Oh is the result of my exploration into audio waveforms and how to
 program various manipulations of audio.
+
+Potty-Oh is a play on the phonetic pronunciation of the terms, "Python Audio".
+Libraries already exist with the unclever names pyaudio and paudio so I went
+with something just a little different.
 
 License
 =======
