@@ -42,15 +42,18 @@ more information::
 Dependencies
 ============
 
-*Tested on Fedora 23 only; your mileage may vary.*
+*Tested on Fedora 23 and MacOS (Homebrew) only; your mileage may vary.*
 
 ``scikits.audiolab`` requires:
 
-- libsndfile-devel
+- *fedora-23*: libsndfile-devel
+- *mac-os*: libsndfile
 
 ``matplotlib`` requires:
 
-- libpng-devel
-- freetype-devel
+- *fedora-23*:
+
+  - libpng-devel
+  - freetype-devel
 
 .. EOF README
