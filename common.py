@@ -37,6 +37,14 @@ def get_cmd_line_parser(version=None, *args, **kwargs):
 
 class ParserArguments(object):
     @staticmethod
+    def modify_argument(parser, arg_name, attribute, new_value):
+        """This is probably not safe/advised, but I'm doing it anyway."""
+        for action in parser._actions:
+            if action.dest == arg_name:
+                setattr(action, attribute, new_value)
+                return
+
+    @staticmethod
     def set_defaults(parser, filename=None, length=None, plot=None,
                      frequency=None, debug=DEBUG, verbose=VERBOSE, **kwargs):
         parser.set_defaults(filename=filename, length=length,
