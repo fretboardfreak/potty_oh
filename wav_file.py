@@ -14,10 +14,6 @@
 
 """wav.py : library for handling wav format sound files."""
 
-import sys
-import argparse
-import math
-
 from scikits.audiolab import Sndfile, Format
 
 
