@@ -122,11 +122,8 @@ if __name__ == '__main__':
             plot.plot_waveform(sg.wavedata, 1, 0, sg.framecount)
         else:
             import wav_file
-            wfile = wav_file.WavFile(args.filename, 1, sg.framecount)
-            try:
-                wfile.write(sg.wavedata)
-            finally:
-                wfile.close()
+            with wav_file.WavFile(args.filename, 1, sg.framecount) as fout:
+                fout.write(sg.wavedata)
 
         return 0
 
