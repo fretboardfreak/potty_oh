@@ -18,6 +18,42 @@ Potty-Oh is a play on the phonetic pronunciation of the terms, "Python Audio".
 Libraries already exist with the unclever names pyaudio and paudio so I went
 with something just a little different.
 
+References
+==========
+
+Here's a list of links that I've come across that have explained some part of
+musical theory or digital audio in a way that was useful.
+
+- http://mathforum.org/library/drmath/view/52312.html
+- https://en.m.wikipedia.org/wiki/Music_and_mathematics
+- https://en.m.wikipedia.org/wiki/Meantone_temperament
+- https://en.m.wikipedia.org/wiki/Quarter-comma_meantone
+- https://en.m.wikipedia.org/wiki/Twelfth_root_of_two
+- https://en.m.wikipedia.org/wiki/C_(musical_note)
+- https://en.m.wikipedia.org/wiki/Piano_key_frequencies
+- https://en.m.wikipedia.org/wiki/Scientific_pitch_notation
+- https://en.m.wikipedia.org/wiki/Diatonic_scale
+- https://en.m.wikipedia.org/wiki/Circle_of_fifths_text_table
+- https://en.m.wikipedia.org/wiki/Pythagorean_tuning
+
+Dependencies
+============
+
+*Tested on Fedora 23 and MacOS (Homebrew) only; your mileage may vary.*
+
+``scikits.audiolab`` requires:
+
+- *fedora-23*: libsndfile-devel
+- *mac-os*: libsndfile
+
+``matplotlib`` requires:
+
+- *fedora-23*:
+
+  - libpng-devel
+  - freetype-devel
+
+
 License
 =======
 
@@ -38,22 +74,5 @@ more information::
         See the License for the specific language governing permissions and
         limitations under the License.
 
-
-Dependencies
-============
-
-*Tested on Fedora 23 and MacOS (Homebrew) only; your mileage may vary.*
-
-``scikits.audiolab`` requires:
-
-- *fedora-23*: libsndfile-devel
-- *mac-os*: libsndfile
-
-``matplotlib`` requires:
-
-- *fedora-23*:
-
-  - libpng-devel
-  - freetype-devel
 
 .. EOF README
