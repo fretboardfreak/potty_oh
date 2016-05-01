@@ -19,8 +19,6 @@ import math
 
 import numpy
 
-VERSION = "0.1"
-
 
 class Generator(object):
     def __init__(self, length=1.0, framerate=44100, verbose=False):
@@ -102,8 +100,7 @@ if __name__ == '__main__':
               'linear': sin_linear}
 
     def main():
-        parser = common.get_cmd_line_parser(description=DESC,
-                                           version=VERSION)
+        parser = common.get_cmd_line_parser(description=DESC)
         parser.add_argument(
             '-t', '--type', help='Type of signal to generate',
             choices=UI_MAP.keys())
