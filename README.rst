@@ -24,6 +24,7 @@ References
 Here's a list of links that I've come across that have explained some part of
 musical theory or digital audio in a way that was useful.
 
+- https://en.m.wikipedia.org/wiki/Bit_rate#Audio
 - http://mathforum.org/library/drmath/view/52312.html
 - https://en.m.wikipedia.org/wiki/Music_and_mathematics
 - https://en.m.wikipedia.org/wiki/Meantone_temperament
