@@ -94,6 +94,14 @@ del(value)
 del(semitone)
 
 
+class EvenTemperament(TemperamentType):
+    """The modern temperament: based on 12 equally spaced tones per octave."""
+    def __init__(self):
+        multipliers = [pow(2, float(i) / 12.0)
+                       for i in range(Interval.max() + 1)]
+        super(EvenTemperament, self).__init__(multipliers)
+
+
 class Temperament(object):
     """A collection of some tuning temperaments used throughout history.
 
@@ -103,6 +111,8 @@ class Temperament(object):
     - quarter-comma mean tone tempered
     - third-comma mean tone tempered
     """
+    even = EvenTemperament()
+
     pythagorean = TemperamentType(
         [1.0, 256.0/243.0, 9.0/8.0, 32.0/27.0, 81.0/64.0,
          4.0/3.0, 729.0/512.0, 3.0/2.0, 128.0/81.0, 27.0/16.0,
@@ -116,7 +126,7 @@ class Temperament(object):
     @classmethod
     def iter(cls, *args, **kwarsg):
         """Iterate over the set of temperaments."""
-        return iter([cls.pythagorean, cls.just])
+        return iter([cls.even, cls.pythagorean, cls.just])
 
 
 class ReferenceFrequencies(object):
@@ -131,8 +141,8 @@ class Key(object):
     """An object for calculating the note frequencies of musical keys."""
 
     def __init__(self, root_frequency=ReferenceFrequencies.middle_c,
-                 root_name="A",
-                 temperament=Temperament.pythagorean):
+                 root_name=None,
+                 temperament=Temperament.even):
         self.root_frequency = float(root_frequency)
         self.root_name = root_name
         self.temperament = temperament
@@ -175,15 +185,14 @@ if __name__ == "__main__":
         if args.plot:
             raise NotImplemented()
         else:
-            pyth = Key()
+            even = Key()
+            pyth = Key(temperament=Temperament.pythagorean)
             just = Key(temperament=Temperament.just)
             with wav_file.WavFile(args.filename, 1, sg.framerate) as fout:
-                for tone in range(Interval.max()):
-                    fout.write(sg.sin_constant(pyth.semitone(tone)))
-                    fout.write(sg.sin_constant(just.semitone(tone)))
-                sg.length = args.length
-                fout.write(sg.sin_constant(pyth.semitone(Interval.octave)))
-                fout.write(sg.sin_constant(just.semitone(Interval.octave)))
+                for tone in range(Interval.max() + 1):
+                    fout.write(sg.sin_constant(even.interval(tone)))
+                    fout.write(sg.sin_constant(pyth.interval(tone)))
+                    fout.write(sg.sin_constant(just.interval(tone)))
 
         return 0
 
