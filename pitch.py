@@ -18,116 +18,10 @@ pitch.py: tools for calculating pitch frequencies.
 
 :TODO: piano key representation (1-80)
 """
-import itertools
 
 import common
-
-
-class Interval(object):
-    """A mapping of interval types to one of the twelve semitones in a key."""
-    _intervals = {
-        'unison': 0, 'minor_second': 1, 'major_second': 2, 'minor_third': 3,
-        'major_third': 4, 'fourth': 5, 'augmented_fourth': 6, 'fifth': 7,
-        'minor_sixth': 8, 'major_sixth': 9, 'minor_seventh': 10,
-        'major_seventh': 11, 'octave': 12}
-
-    # Should alias 'seventh' be a minor seventh instead? flat 7 is often the
-    # intended meaning of "seventh". Or is it just the Minor Domininant 7th
-    # chord that use a flat 7?
-    _aliases = {
-        'second': 2, 'third': 4, 'diminished_fifth': 6,
-        'sixth': 9, 'seventh': 11}
-
-    # name -> semitones
-    _property_map = _intervals.copy()
-    # alias -> semitones
-    _property_map.update(_aliases)
-
-    # semitones -> name
-    _semitone_map = dict((value, key)
-                         for key, value in _intervals.items())
-
-    @classmethod
-    def name(cls, interval):
-        """Get the string name of an interval."""
-        return cls._semitone_map[interval]
-
-    @classmethod
-    def max(cls):
-        """The highest interval or semitone in an octave."""
-        return len(cls._intervals.items()) - 1
-
-    @classmethod
-    def min(cls):
-        """For completeness."""
-        return 0
-
-
-class TemperamentType(list):
-    """A list of interval ratios to represent musical tuning temperament."""
-    def __init__(self, multipliers):
-        if len(multipliers) != Interval.max() + 1:
-            raise TypeError('%s multipliers are required, %s received.' %
-                            (Interval.max(), len(multipliers)))
-        super(TemperamentType, self).__init__(multipliers)
-
-    @classmethod
-    def set_interval_property(cls, name):
-        """Set an interval property on the temprement list."""
-
-        def method(cls):
-            return cls[getattr(Interval, name)]
-
-        setattr(cls, name, property(method))
-
-
-# add attributes to the Interval and TemperamentType classes
-for key, value in Interval._property_map.items():
-    setattr(Interval, key, value)
-    TemperamentType.set_interval_property(key)
-for semitone in range(13):
-    key = 'semitone%s' % semitone
-    setattr(Interval, key, semitone)
-    TemperamentType.set_interval_property(key)
-# clean up after myself
-del(key)
-del(value)
-del(semitone)
-
-
-class EvenTemperament(TemperamentType):
-    """The modern temperament: based on 12 equally spaced tones per octave."""
-    def __init__(self):
-        multipliers = [pow(2, float(i) / 12.0)
-                       for i in range(Interval.max() + 1)]
-        super(EvenTemperament, self).__init__(multipliers)
-
-
-class Temperament(object):
-    """A collection of some tuning temperaments used throughout history.
-
-    Other Temperaments to add:
-
-    - equal tempered/12th root tempered (freq=root*pow(2, (semitones/12)))
-    - quarter-comma mean tone tempered
-    - third-comma mean tone tempered
-    """
-    even = EvenTemperament()
-
-    pythagorean = TemperamentType(
-        [1.0, 256.0/243.0, 9.0/8.0, 32.0/27.0, 81.0/64.0,
-         4.0/3.0, 729.0/512.0, 3.0/2.0, 128.0/81.0, 27.0/16.0,
-         16.0/9.0, 243.0/128.0, 2.0])
-
-    just = TemperamentType(
-        [1.0, 25.0/24.0, 9.0/8.0, 6.0/5.0, 5.0/4.0,
-         4.0/3.0, 45.0/32.0, 3.0/2.0, 8.0/5.0, 5.0/3.0,
-         9.0/5.0, 15.0/8.0, 2.0])
-
-    @classmethod
-    def iter(cls, *args, **kwarsg):
-        """Iterate over the set of temperaments."""
-        return iter([cls.even, cls.pythagorean, cls.just])
+from temperament import Temperament
+from interval import Interval
 
 
 class ReferenceFrequencies(object):
@@ -192,9 +86,8 @@ if __name__ == "__main__":
             raise NotImplemented()
         else:
             with wav_file.WavFile(args.filename, 1, sg.framerate) as fout:
-                for tone, temperament in itertools.product(
-                        range(Interval.max() + 1), Temperament.iter()):
-                    key = Key(temperament=temperament)
+                key = Key()
+                for tone in range(Interval.max() + 1):
                     fout.write(sg.sin_constant(key.interval(tone)))
 
         return 0
