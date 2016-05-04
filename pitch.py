@@ -53,7 +53,7 @@ class Interval(object):
 
     @classmethod
     def max(cls):
-        """Max number of intervals or semitones per octave."""
+        """The highest interval or semitone in an octave."""
         return len(cls._intervals.items()) - 1
 
     @classmethod
@@ -63,7 +63,7 @@ class Interval(object):
 
 
 class TemperamentType(list):
-    """A list of interval ratios to represent musical tuning temperament. """
+    """A list of interval ratios to represent musical tuning temperament."""
     def __init__(self, multipliers):
         if len(multipliers) != Interval.max() + 1:
             raise TypeError('%s multipliers are required, %s received.' %
@@ -137,9 +137,10 @@ class Key(object):
         self.root_name = root_name
         self.temperament = temperament
 
-    def semitone(self, semitone, octave=0):
-        """Get the frequency of a given semitone relative to the root."""
+    def interval(self, semitone, octave=0):
+        """Get the frequency of a given interval relative to the root."""
         common.dprint('semitone %s, octave %s :' % (semitone, octave))
+        # mod by 'Interval.max() - 1' b/c there are 2 roots in a temperament
         index = semitone % (Interval.max() - 1)
         common.dprint('  interval: %s' % (Interval.name(index)))
         common.dprint('  root ratio: %s' % self.temperament[index])
