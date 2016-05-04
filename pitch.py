@@ -140,7 +140,7 @@ class ReferenceFrequencies(object):
 class Key(object):
     """An object for calculating the note frequencies of musical keys."""
 
-    def __init__(self, root_frequency=ReferenceFrequencies.middle_c,
+    def __init__(self, root_frequency=ReferenceFrequencies.concert_a4,
                  root_name=None,
                  temperament=Temperament.even):
         self.root_frequency = float(root_frequency)
@@ -150,14 +150,17 @@ class Key(object):
     def interval(self, semitone, octave=0):
         """Get the frequency of a given interval relative to the root."""
         common.dprint('semitone %s, octave %s :' % (semitone, octave))
-        # mod by 'Interval.max() - 1' b/c there are 2 roots in a temperament
-        index = semitone % (Interval.max() - 1)
+        index = semitone % Interval.max()
         common.dprint('  interval: %s' % (Interval.name(index)))
-        common.dprint('  root ratio: %s' % self.temperament[index])
-        octave += semitone // (Interval.max() - 1)
+        octave += semitone // Interval.max()
+        common.dprint('  octave: %s' % octave)
+
+        # octaves are always 'root * 2' so use
+        # 'root * pow(2, octave)' for new root.
         octave_root = (self.root_frequency *
-                       (self.temperament.octave * (octave + 1)))
+                       (pow(self.temperament.octave, octave)))
         common.dprint("  octave root: %s" % octave_root)
+        common.dprint('  interval ratio: %s' % self.temperament[index])
         result = octave_root * self.temperament[index]
         common.dprint('  note freq: %s' % result)
         return result
