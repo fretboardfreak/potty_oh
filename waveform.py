@@ -34,10 +34,10 @@ class Generator(object):
         if verbose:
             self.verbose = verbose
 
-        # framecount = frames/sec * sec
+        # framecount = frames / sec * sec
         self.framecount = int(self.framerate * self.length)
         # rectify length to actual framecount
-        self.length = float(self.framecount)/self.framerate
+        self.length = float(self.framecount) / self.framerate
         self.dprint('framecount = %s' % self.framecount)
         self.dprint('rectified length = %s' % self.length)
         self.wavedata = numpy.zeros((self.framecount, 1))
@@ -80,49 +80,3 @@ class Generator(object):
             amplitude = self._sinusoid_amplitude(frame, frequency)
             self.wavedata[frame, 0] = amplitude
         return self.wavedata
-
-
-if __name__ == '__main__':
-    import common
-
-    DESC = "A Demonstration Program for the Signal Generator."
-
-    def whitenoise(args, generator):
-        generator.whitenoise()
-
-    def sin_constant(args, generator):
-        generator.sin_constant(args.frequency)
-
-    def sin_linear(args, generator):
-        generator.sin_linear(args.frequency/2, args.frequency*2)
-
-    UI_MAP = {'noise': whitenoise, 'constant': sin_constant,
-              'linear': sin_linear}
-
-    def main():
-        parser = common.get_cmd_line_parser(description=DESC)
-        parser.add_argument(
-            '-t', '--type', help='Type of signal to generate',
-            choices=UI_MAP.keys())
-        common.ParserArguments.filename(parser)
-        common.ParserArguments.length(parser)
-        common.ParserArguments.plot(parser)
-        common.ParserArguments.frequency(parser)
-        common.ParserArguments.set_defaults(parser, type='constant')
-        args = parser.parse_args()
-
-        sg = Generator(length=args.length, verbose=args.debug)
-
-        UI_MAP[args.type](args, sg)
-
-        if args.plot:
-            import plot
-            plot.plot_waveform(sg.wavedata, 1, 0, sg.framecount)
-        else:
-            import wav_file
-            with wav_file.WavFile(args.filename, 1, sg.framecount) as fout:
-                fout.write(sg.wavedata)
-
-        return 0
-
-    common.call_main(main)
