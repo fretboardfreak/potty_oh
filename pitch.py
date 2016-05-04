@@ -176,8 +176,7 @@ if __name__ == "__main__":
         common.ParserArguments.modify_argument(parser, 'length', 'help',
                                                'Length per pitch clip.')
         common.ParserArguments.plot(parser)
-        common.ParserArguments.set_defaults(parser, filename='signal.wav',
-                                            length=0.75)
+        common.ParserArguments.set_defaults(parser, length=0.75)
         args = parser.parse_args()
 
         sg = waveform.Generator(length=args.length / 2.0, verbose=args.debug)

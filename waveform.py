@@ -108,9 +108,7 @@ if __name__ == '__main__':
         common.ParserArguments.length(parser)
         common.ParserArguments.plot(parser)
         common.ParserArguments.frequency(parser)
-        common.ParserArguments.set_defaults(parser, filename='signal.wav',
-                                            length=1.0, frequency=480,
-                                            type='constant')
+        common.ParserArguments.set_defaults(parser, type='constant')
         args = parser.parse_args()
 
         sg = Generator(length=args.length, verbose=args.debug)

@@ -47,6 +47,13 @@ class ParserArguments(object):
     @staticmethod
     def set_defaults(parser, filename=None, length=None, plot=None,
                      frequency=None, debug=DEBUG, verbose=VERBOSE, **kwargs):
+        if not filename:
+            filename = 'signal.wav'
+        if not length:
+            length = 1.0
+        if not frequency:
+            # TODO: split up pitch module so this doesn't have to be literal
+            frequency = 440
         parser.set_defaults(filename=filename, length=length,
                             frequency=frequency, debug=debug,
                             verbose=verbose, **kwargs)
@@ -132,7 +139,7 @@ def call_main(main):
     try:
         sys.exit(main())
     except SystemExit:
-        sys.exit(0)
+        raise
     except KeyboardInterrupt:
         print('...interrupted by user, exiting.')
         sys.exit(1)
