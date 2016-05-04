@@ -18,6 +18,7 @@ pitch.py: tools for calculating pitch frequencies.
 
 :TODO: piano key representation (1-80)
 """
+import itertools
 
 import common
 
@@ -170,7 +171,10 @@ if __name__ == "__main__":
     import waveform
     import wav_file
 
-    DOC = "A demonstration of various musical notes and tunings."
+    DOC = ("A demonstration of various musical notes and tunings. The 12 "
+           "semitones of a musical scale are played in each temperament. "
+           "Musical temperament refers to the ratios used to determine the "
+           "frequency of each note.")
 
     def main():
         parser = common.get_cmd_line_parser(description=DOC)
@@ -187,14 +191,11 @@ if __name__ == "__main__":
         if args.plot:
             raise NotImplemented()
         else:
-            even = Key()
-            pyth = Key(temperament=Temperament.pythagorean)
-            just = Key(temperament=Temperament.just)
             with wav_file.WavFile(args.filename, 1, sg.framerate) as fout:
-                for tone in range(Interval.max() + 1):
-                    fout.write(sg.sin_constant(even.interval(tone)))
-                    fout.write(sg.sin_constant(pyth.interval(tone)))
-                    fout.write(sg.sin_constant(just.interval(tone)))
+                for tone, temperament in itertools.product(
+                        range(Interval.max() + 1), Temperament.iter()):
+                    key = Key(temperament=temperament)
+                    fout.write(sg.sin_constant(key.interval(tone)))
 
         return 0
 
