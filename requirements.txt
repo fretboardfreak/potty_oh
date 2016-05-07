@@ -1,4 +1,4 @@
 numpy
 scipy
-scikits.audiolab
+pysndfile
 matplotlib
