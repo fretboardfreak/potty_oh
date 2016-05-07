@@ -1,9 +1,9 @@
-==========================================
-Potty-Oh: Python Audio Programming Toolset
-==========================================
+======================
+Potty-Oh: Python Audio
+======================
 
 :author: Curtis Sand (a.k.a. fret, fretboardfreak)
-:date: 160430
+:date: 160507
 
 **Potty-Oh**: **P**\ython **Audio**
 
@@ -40,19 +40,35 @@ musical theory or digital audio in a way that was useful.
 Dependencies
 ============
 
-*Tested on Fedora 23 and MacOS (Homebrew) only; your mileage may vary.*
+*These instructions tested on Fedora 23 and MacOS (Homebrew) only; your mileage
+may vary.*
 
-``scikits.audiolab`` requires:
+Potty-Oh is written for Python 3.
 
-- *fedora-23*: libsndfile-devel
-- *mac-os*: libsndfile
+System Dependencies
+^^^^^^^^^^^^^^^^^^^
 
-``matplotlib`` requires:
+Fedora 23 Packages: install with ``sudo dnf install <pkg>, ...``
 
-- *fedora-23*:
+- python3-devel
+- liblas-devel
+- lapack-devel
+- libsndfile-devel
+- libpng-devel
+- freetype-devel
 
-  - libpng-devel
-  - freetype-devel
+MacOS Homebrew Packages: install with ``brew intstall <pkg>, ...``
+
+- libsndfile
+
+
+Once the system dependencies are resolved, the python package requirements can
+be found in ``requirements.txt``. A list of helpful packages for development
+are also available in ``dev-requirements.txt``. The python requirements can be
+installed using ``pip``::
+
+    pip3 install -r requirements.txt
+    pip3 install -r dev-requirements.txt
 
 
 License
