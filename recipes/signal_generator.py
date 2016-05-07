@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 Curtis Sand
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,9 +60,9 @@ def main():
         import potty_oh.plot as plot
         plot.plot_waveform(sg.wavedata, 1, 0, sg.framecount)
     else:
-        import potty_oh.wav_file as wav_file
-        with wav_file.WavFile(args.filename, 1, sg.framecount) as fout:
-            fout.write(sg.wavedata)
+        from potty_oh.wav_file import wav_file_context
+        with wav_file_context(args.filename) as fout:
+            fout.write_frames(sg.wavedata)
 
     return 0
 
