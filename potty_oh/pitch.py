@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 Curtis Sand
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,10 +85,10 @@ if __name__ == "__main__":
         if args.plot:
             raise NotImplemented()
         else:
-            with wav_file.WavFile(args.filename, 1, sg.framerate) as fout:
+            with wav_file.wav_file_context(args.filename) as fout:
                 key = Key()
                 for tone in range(Interval.max() + 1):
-                    fout.write(sg.sin_constant(key.interval(tone)))
+                    fout.write_frames(sg.sin_constant(key.interval(tone)))
 
         return 0
 
