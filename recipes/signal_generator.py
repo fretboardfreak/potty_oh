@@ -18,19 +18,8 @@
 import sys
 import os
 
-
-def fix_pythonpath():
-    dirname, _ = os.path.split(sys.argv[0])
-    tail, head = os.path.split(dirname)
-    if head == 'recipes':
-        sys.path.insert(0, tail)
-
-
-fix_pythonpath()
-
-
-import common
-from waveform import Generator
+from potty_oh import common
+from potty_oh.waveform import Generator
 
 
 def whitenoise(args, generator):
@@ -68,10 +57,10 @@ def main():
     ui_map[args.type](args, sg)
 
     if args.plot:
-        import plot
+        import potty_oh.plot as plot
         plot.plot_waveform(sg.wavedata, 1, 0, sg.framecount)
     else:
-        import wav_file
+        import potty_oh.wav_file as wav_file
         with wav_file.WavFile(args.filename, 1, sg.framecount) as fout:
             fout.write(sg.wavedata)
 
