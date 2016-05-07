@@ -15,10 +15,6 @@
 
 # test.sh : Simplify the testing cycle.
 
-DEFAULT_FILE="signal.wav"
-
-PLAY="vlc -I ncurses --one-instance"
-
 die () {
     echo $2
     exit 1
@@ -26,5 +22,4 @@ die () {
 
 [ $# -lt 1 ] && die 1 "Nothing to test. Need an argument."
 
-rm -f ${DEFAULT_FILE} && ./$@ --debug && ${PLAY} ${DEFAULT_FILE} && \
-    rm -f ${DEFAULT_FILE}
+PYTHONPATH=. $@
