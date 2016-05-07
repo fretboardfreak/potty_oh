@@ -14,25 +14,29 @@
 
 """wav.py : library for handling wav format sound files."""
 
-from scikits.audiolab import Sndfile, Format
+from contextlib import contextmanager
+from pysndfile import construct_format, PySndfile
 
 
-class WavFile(object):
-    def __init__(self, filename, channels, framerate):
-        self.filename = filename
-        self.channels = channels
-        self.framerate = framerate
-        self._fhandle = Sndfile(self.filename, 'w', Format('wav'),
-                                self.channels, self.framerate)
+def wav_format_code(encoding=None):
+    """Calculate the format code for 'pcm16' encoded 'wav' files."""
+    if not encoding:
+        encoding = 'pcm16'
+    return construct_format('wav', encoding)
 
-    def write(self, wavedata):
-        self._fhandle.write_frames(wavedata)
 
-    def close(self):
-        self._fhandle.close()
+def open(filename, mode=None, format=None, channels=1,
+         framerate=44100):
+    """Factory method to generate PySndfile objects with wav file defaults."""
+    if not mode:
+        mode = 'w'
+    if not format:
+        fmt = wav_format_code()
+    return PySndfile(filename, mode, fmt, channels, framerate)
 
-    def __enter__(self):
-        return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
+@contextmanager
+def wav_file_context(*args, **kwargs):
+    """Context manager for cleaning up wav file resources."""
+    sndfile = open(*args, **kwargs)
+    yield sndfile
