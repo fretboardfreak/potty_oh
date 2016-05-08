@@ -20,9 +20,6 @@ temperaments.  Musical temperament refers to the ratios used to determine the
 frequency of each note.
 """
 
-
-import sys
-import os
 import itertools
 
 from potty_oh.common import get_cmd_line_parser
@@ -40,7 +37,7 @@ def main():
     ParserArguments.filename(parser)
     ParserArguments.length(parser)
     ParserArguments.modify_argument(parser, 'length', 'help',
-                                           'Length per pitch clip.')
+                                    'Length per pitch clip.')
     ParserArguments.set_defaults(parser, length=0.75)
     args = parser.parse_args()
 
