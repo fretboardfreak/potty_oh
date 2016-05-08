@@ -20,12 +20,9 @@ pitch.py: tools for calculating pitch frequencies.
 """
 
 from potty_oh.common import dprint
-from potty_oh.common import get_cmd_line_parser
-from potty_oh.common import ParserArguments
-from potty_oh.common import call_main
 
-from temperament import Temperament
-from interval import Interval
+from .temperament import Temperament
+from .interval import Interval
 
 
 class ReferenceFrequencies(object):
@@ -63,37 +60,3 @@ class Key(object):
         result = octave_root * self.temperament[index]
         dprint('  note freq: %s' % result)
         return result
-
-
-if __name__ == "__main__":
-    from potty_oh.waveform import Generator
-    from potty_oh.wav_file import wav_file_context
-
-    DOC = ("A demonstration of various musical notes and tunings. The 12 "
-           "semitones of a musical scale are played in each temperament. "
-           "Musical temperament refers to the ratios used to determine the "
-           "frequency of each note.")
-
-    def main():
-        parser = get_cmd_line_parser(description=DOC)
-        ParserArguments.filename(parser)
-        ParserArguments.length(parser)
-        ParserArguments.modify_argument(parser, 'length', 'help',
-                                               'Length per pitch clip.')
-        ParserArguments.plot(parser)
-        ParserArguments.set_defaults(parser, length=0.75)
-        args = parser.parse_args()
-
-        sg = Generator(length=args.length / 2.0, verbose=args.debug)
-
-        if args.plot:
-            raise NotImplemented()
-        else:
-            with wav_file_context(args.filename) as fout:
-                key = Key()
-                for tone in range(Interval.max() + 1):
-                    fout.write_frames(sg.sin_constant(key.interval(tone)))
-
-        return 0
-
-    call_main(main)

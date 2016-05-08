@@ -14,7 +14,7 @@
 
 """temperament.py: a library of musical tuning temperaments from history."""
 
-from interval import Interval, add_interval_attributes_to_class
+from .interval import Interval, add_interval_attributes_to_class
 
 
 class TemperamentType(list):
