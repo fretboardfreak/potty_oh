@@ -19,6 +19,12 @@ Potty-Oh is a play on the phonetic pronunciation of the terms, "Python Audio".
 Libraries already exist with the unclever names pyaudio and paudio so I went
 with something just a little different.
 
+A note on music libraries: I started writing my own library to calculate
+musical pitches in various tuning temperaments. The modules are available in
+the subpackage ``potty_oh.music``. For more complicated musical concepts I've
+opted to use the `music21 <http://web.mit.edu/music21/>`_ library developed by
+MIT.
+
 References
 ==========
 

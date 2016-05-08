@@ -2,3 +2,4 @@ numpy
 scipy
 pysndfile
 matplotlib
+music21
