@@ -12,7 +12,8 @@ Potty-Oh: Python Audio
     - https://bitbucket.org/fret/potty_oh
 
 Potty-Oh is the result of my exploration into audio waveforms and how to
-program various manipulations of audio.
+program various manipulations of audio. The project consists of the Potty-Oh
+python library and a set of experiments using the library.
 
 Potty-Oh is a play on the phonetic pronunciation of the terms, "Python Audio".
 Libraries already exist with the unclever names pyaudio and paudio so I went
