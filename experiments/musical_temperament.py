@@ -48,7 +48,7 @@ def main():
                 range(Interval.max() + 1), Temperament.iter()):
             key = Key(temperament=temperament)
             waveform = sg.sin_constant(key.interval(tone))
-            fout.write_frames(waveform.wavedata)
+            fout.write_frames(waveform.frames)
 
     return 0
 

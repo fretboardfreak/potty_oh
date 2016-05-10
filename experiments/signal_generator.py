@@ -59,11 +59,11 @@ def main():
 
     if args.plot:
         import potty_oh.plot as plot
-        plot.plot_waveform(waveform.wavedata, waveform.channels, 0, 4000)
+        plot.plot_waveform(waveform.frames, waveform.channels, 0, 4000)
     else:
         from potty_oh.wav_file import wav_file_context
         with wav_file_context(args.filename) as fout:
-            fout.write_frames(waveform.wavedata)
+            fout.write_frames(waveform.frames)
 
     return 0
 

@@ -54,16 +54,16 @@ class Waveform(object):
             raise ValueError('Waveform only supports 1 or 2 channel audio.')
 
     def __repr__(self):
-        return "<{}: framerate={}, channels={}, wavedata=({})".format(
+        return "<{}: framerate={}, channels={}, wavedata=({})>".format(
                 self.__class__.__name__, self.framerate, self.channels,
                 self.wavedata.shape)
 
     @property
-    def wavedata(self):
+    def frames(self):
         return self._wavedata
 
-    @wavedata.setter
-    def wavedata(self, value):
+    @frames.setter
+    def frames(self, value):
         self._set_wavedata(value)
 
     def __len__(self):
@@ -95,7 +95,6 @@ class Generator(object):
         # rectify length to actual framecount
         self.length = float(self.framecount) / self.framerate
         self.dprint('framecount = %s' % self.framecount)
-        self.dprint('rectified length = %s' % self.length)
         self.wavedata = numpy.zeros(self.framecount)
 
     @property
