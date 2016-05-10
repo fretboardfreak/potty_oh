@@ -96,7 +96,11 @@ class Generator(object):
         self.length = float(self.framecount) / self.framerate
         self.dprint('framecount = %s' % self.framecount)
         self.dprint('rectified length = %s' % self.length)
-        self.wavedata = numpy.zeros((self.framecount, 1))
+        self.wavedata = numpy.zeros(self.framecount)
+
+    @property
+    def waveform(self):
+        return Waveform(self.wavedata, self.framerate)
 
     def dprint(self, msg):
         """Conditionally print a debugging message."""
@@ -106,7 +110,7 @@ class Generator(object):
     def whitenoise(self, *args, **kwargs):
         """Random Gaussian White Noise."""
         self._init(*args, **kwargs)
-        self.wavedata = numpy.random.randn(self.framecount, 1)
+        self.wavedata = numpy.random.randn(self.framecount)
         return self.wavedata
 
     def _sinusoid_amplitude(self, frame, frequency):
@@ -120,19 +124,19 @@ class Generator(object):
         """Sinusoid wave of constant frequency."""
         self._init(*args, **kwargs)
         frequency = float(frequency)
-        for frame in range(self.framecount):
+        for frame in range(len(self.wavedata)):
             amplitude = self._sinusoid_amplitude(frame, frequency)
-            self.wavedata[frame, 0] = amplitude
-        return self.wavedata
+            self.wavedata[frame] = amplitude
+        return self.waveform
 
     def sin_linear(self, start_freq, end_freq, *args, **kwargs):
         """Sinusoid wave of linearly changing frequency."""
         self._init(*args, **kwargs)
-        for frame in range(self.framecount):
+        for frame in range(len(self.wavedata)):
             # freq = start_freq + frame * freq_rate
             # freq_rate = total_freq_change / framecount
             frequency = start_freq + frame * (
                 float(end_freq - start_freq) / self.framecount)
             amplitude = self._sinusoid_amplitude(frame, frequency)
-            self.wavedata[frame, 0] = amplitude
-        return self.wavedata
+            self.wavedata[frame] = amplitude
+        return self.waveform
