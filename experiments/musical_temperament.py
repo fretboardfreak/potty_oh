@@ -47,7 +47,8 @@ def main():
         for tone, temperament in itertools.product(
                 range(Interval.max() + 1), Temperament.iter()):
             key = Key(temperament=temperament)
-            fout.write_frames(sg.sin_constant(key.interval(tone)))
+            waveform = sg.sin_constant(key.interval(tone))
+            fout.write_frames(waveform.wavedata)
 
     return 0
 

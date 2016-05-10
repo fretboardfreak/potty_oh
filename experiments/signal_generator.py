@@ -55,14 +55,15 @@ def main():
     sg = Generator(length=args.length, verbose=args.debug)
 
     ui_map[args.type](args, sg)
+    waveform = sg.waveform
 
     if args.plot:
         import potty_oh.plot as plot
-        plot.plot_waveform(sg.wavedata, 1, 0, sg.framecount)
+        plot.plot_waveform(waveform.wavedata, waveform.channels, 0, 4000)
     else:
         from potty_oh.wav_file import wav_file_context
         with wav_file_context(args.filename) as fout:
-            fout.write_frames(sg.wavedata)
+            fout.write_frames(waveform.wavedata)
 
     return 0
 
