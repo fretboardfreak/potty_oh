@@ -15,8 +15,30 @@
 """A Waveform or Signal Generator Library for creating audio waveforms."""
 
 import math
+from itertools import zip_longest
 
 import numpy
+
+
+def mix_down(first, second):
+    """Blend two Waveform together using a mathematical average.
+
+    Does using a mathematical average affect the individual frequency powers of
+    two notes (assuming pure sinusoids in each waveform)?
+    """
+    first_frameset = first
+    if isinstance(first, Waveform):
+        first_frameset = first.frames
+    second_frameset = second
+    if isinstance(second, Waveform):
+        second_frameset = second.frames
+    result = numpy.zeros(max(len(first_frameset), len(second_frameset)))
+    for frame, (lfr, rfr) in enumerate(
+            zip_longest(first_frameset, second_frameset, fillvalue=0.0)):
+        numerator = float(lfr) + float(rfr)
+        numerator = 0.001 if numerator == 0.0 else numerator
+        result[frame] = numerator / 2.0
+    return Waveform(result)
 
 
 class Waveform(object):
@@ -74,6 +96,10 @@ class Waveform(object):
     def length(self):
         """Return the length of the waveform in seconds."""
         return float(len(self._wavedata)) / self.framerate
+
+    def mix_down(self, other):
+        """Mix this waveform with another. """
+        return mix_down(self, other)
 
 
 class Generator(object):
