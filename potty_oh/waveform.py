@@ -19,6 +19,63 @@ import math
 import numpy
 
 
+class Waveform(object):
+    """A Container for audio waveforms and associated metadata.
+
+    Supports either Mono or Stereo audio waveforms.
+    """
+    def __init__(self, wavedata, framerate=44100):
+        self.framerate = framerate
+        self._set_wavedata(wavedata)
+
+    def _verify_channel_count(self, channels):
+        if channels < 1 or channels > 2:
+            raise ValueError('Waveform only supports 1 or 2 channel audio.')
+
+    def _set_wavedata(self, wavedata):
+        """Convert the wavedata into a numpy array of a consistent shape.
+
+        A single array dimension is used for mono waveforms. For stereo
+        waveforms a 2D array with the dimensions (framecount, 2) is used.
+        """
+        tmp = numpy.array(wavedata)
+        if len(tmp.shape) == 1:
+            self.channels = 1
+            self._wavedata = tmp
+        elif len(tmp.shape) == 2:
+            self.channels = 2
+            if tmp.shape[0] < tmp.shape[1]:
+                self._verify_channel_count(tmp.shape[0])
+                self._wavedata = tmp.transpose()
+            else:
+                self._verify_channel_count(tmp.shape[1])
+                self._wavedata = tmp
+        else:
+            raise ValueError('Waveform only supports 1 or 2 channel audio.')
+
+    def __repr__(self):
+        return "<{}: framerate={}, channels={}, wavedata=({})".format(
+                self.__class__.__name__, self.framerate, self.channels,
+                self.wavedata.shape)
+
+    @property
+    def wavedata(self):
+        return self._wavedata
+
+    @wavedata.setter
+    def wavedata(self, value):
+        self._set_wavedata(value)
+
+    def __len__(self):
+        """Return framecount for len() since it must be an integer."""
+        return len(self._wavedata)
+
+    @property
+    def length(self):
+        """Return the length of the waveform in seconds."""
+        return float(len(self._wavedata)) / self.framerate
+
+
 class Generator(object):
     def __init__(self, length=1.0, framerate=44100, verbose=False):
         self.length = length
