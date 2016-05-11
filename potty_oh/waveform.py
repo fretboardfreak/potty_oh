@@ -35,9 +35,7 @@ def mix_down(first, second):
     result = numpy.zeros(max(len(first_frameset), len(second_frameset)))
     for frame, (lfr, rfr) in enumerate(
             zip_longest(first_frameset, second_frameset, fillvalue=0.0)):
-        numerator = float(lfr) + float(rfr)
-        numerator = 0.001 if numerator == 0.0 else numerator
-        result[frame] = numerator / 2.0
+        result[frame] = numpy.mean([float(lfr), float(rfr)])
     return Waveform(result)
 
 
