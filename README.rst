@@ -43,6 +43,7 @@ musical theory or digital audio in a way that was useful.
 - https://en.m.wikipedia.org/wiki/Diatonic_scale
 - https://en.m.wikipedia.org/wiki/Circle_of_fifths_text_table
 - https://en.m.wikipedia.org/wiki/Pythagorean_tuning
+- http://zone.ni.com/reference/en-XX/help/372416B-01/svtconcepts/fft_funda/
 
 Dependencies
 ============
