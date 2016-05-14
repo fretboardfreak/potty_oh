@@ -17,6 +17,7 @@
 from contextlib import contextmanager
 from pysndfile import construct_format, PySndfile
 
+from .common import Defaults
 
 def wav_format_code(encoding=None):
     """Calculate the format code for 'pcm16' encoded 'wav' files."""
@@ -25,13 +26,17 @@ def wav_format_code(encoding=None):
     return construct_format('wav', encoding)
 
 
-def open(filename, mode=None, format=None, channels=1,
-         framerate=44100):
+def open(filename, mode=None, format=None, channels=None,
+         framerate=None):
     """Factory method to generate PySndfile objects with wav file defaults."""
     if not mode:
         mode = 'w'
     if not format:
         fmt = wav_format_code()
+    if not channels:
+        channels = Defaults.channels
+    if not framerate:
+        framerate = Defaults.framerate
     return PySndfile(filename, mode, fmt, channels, framerate)
 
 

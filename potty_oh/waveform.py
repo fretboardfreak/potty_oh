@@ -15,9 +15,10 @@
 """A Waveform or Signal Generator Library for creating audio waveforms."""
 
 import math
+import numpy
 from itertools import zip_longest
 
-import numpy
+from .common import Defaults
 
 
 def mix_down(first, second):
@@ -44,7 +45,9 @@ class Waveform(object):
 
     Supports either Mono or Stereo audio waveforms.
     """
-    def __init__(self, wavedata, framerate=44100):
+    def __init__(self, wavedata, framerate=None):
+        if not framerate:
+           framerate = Defaults.framerate
         self.framerate = framerate
         self._set_wavedata(wavedata)
 

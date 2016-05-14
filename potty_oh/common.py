@@ -18,8 +18,12 @@ import sys
 import argparse
 
 
-DEBUG = False
-VERBOSE = False
+class Defaults:
+    tempo = 100
+    framerate = 44100
+    channels = 1
+    debug = False
+    verbose = False
 
 
 def get_cmd_line_parser(version=None, *args, **kwargs):
@@ -46,7 +50,7 @@ class ParserArguments(object):
 
     @staticmethod
     def set_defaults(parser, filename=None, length=None, plot=None,
-                     frequency=None, debug=DEBUG, verbose=VERBOSE, **kwargs):
+                     frequency=None, debug=None, verbose=None, **kwargs):
         if not filename:
             filename = 'signal.wav'
         if not length:
@@ -54,6 +58,10 @@ class ParserArguments(object):
         if not frequency:
             # TODO: split up pitch module so this doesn't have to be literal
             frequency = 440
+        if not debug:
+            debug = Defaults.debug
+        if not verbose:
+            verbose = Defaults.verbose
         parser.set_defaults(filename=filename, length=length,
                             frequency=frequency, debug=debug,
                             verbose=verbose, **kwargs)
@@ -90,13 +98,13 @@ class ParserArguments(object):
 
 def dprint(msg):
     """Conditionally print a debug message."""
-    if DEBUG:
+    if Defaults.debug:
         print(msg)
 
 
 def vprint(msg):
     """Conditionally print a verbose message."""
-    if VERBOSE:
+    if Defaults.verbose:
         print(msg)
 
 
@@ -116,8 +124,7 @@ class DebugAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         print('Enabling debugging output.')
-        global DEBUG
-        DEBUG = True
+        Defaults.debug = True
         setattr(namespace, self.dest, True)
 
 
@@ -129,8 +136,7 @@ class VerboseAction(DebugAction):
 
     def __call__(self, parser, namespace, values, option_string=None):
         print('Enabling verbose output.')
-        global VERBOSE
-        VERBOSE = True
+        Defaults.verbose = True
         setattr(namespace, self.dest, True)
 
 
@@ -144,7 +150,7 @@ def call_main(main):
         print('...interrupted by user, exiting.')
         sys.exit(1)
     except Exception as exc:
-        if DEBUG:
+        if Defaults.debug:
             raise
         else:
             print('Unhandled Error:\n{}'.format(exc))
