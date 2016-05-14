@@ -22,6 +22,9 @@ class Defaults:
     tempo = 100
     framerate = 44100
     channels = 1
+    frequency = 440.0
+    length = 1
+    filename = 'signal.wav'
     debug = False
     verbose = False
 
@@ -50,20 +53,23 @@ class ParserArguments(object):
 
     @staticmethod
     def set_defaults(parser, filename=None, length=None, plot=None,
-                     frequency=None, debug=None, verbose=None, **kwargs):
+                     frequency=None, tempo=None, debug=None, verbose=None,
+                     **kwargs):
         if not filename:
-            filename = 'signal.wav'
+            filename = Defaults.filename
         if not length:
-            length = 1.0
+            length = Defaults.length
         if not frequency:
             # TODO: split up pitch module so this doesn't have to be literal
-            frequency = 440
+            frequency = Defaults.frequency
+        if not tempo:
+            tempo = Defaults.tempo
         if not debug:
             debug = Defaults.debug
         if not verbose:
             verbose = Defaults.verbose
         parser.set_defaults(filename=filename, length=length,
-                            frequency=frequency, debug=debug,
+                            frequency=frequency, debug=debug, tempo=tempo,
                             verbose=verbose, **kwargs)
         return parser
 
@@ -93,6 +99,13 @@ class ParserArguments(object):
     def frequency(parser):
         parser.add_argument(
             '-f', '--frequency', help='Frequency to use.', type=float)
+        return parser
+
+    @staticmethod
+    def tempo(parser):
+        parser.add_argument(
+            '-t', '--tempo', type=int,
+            help='Tempo to use for the generated signals.')
         return parser
 
 
