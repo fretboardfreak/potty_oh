@@ -21,10 +21,7 @@ from scipy import fft
 
 from potty_oh.common import get_cmd_line_parser
 from potty_oh.common import call_main
-from potty_oh.wav_file import wav_file_context
-from potty_oh.waveform import Generator, mix_down
-from potty_oh.music.pitch import Key
-from potty_oh.music.interval import Interval
+from potty_oh.waveform import Generator
 
 
 def analyze_waveform(waveform):
@@ -60,7 +57,8 @@ def main():
     print("Frequency Powers found by FFT: ", frequency_powers)
 
     print('\n0.25 second waveform at 2000Hz')
-    frequency_powers = analyze_waveform(sig_gen.sin_constant(2000, length=0.25))
+    frequency_powers = analyze_waveform(
+        sig_gen.sin_constant(2000, length=0.25))
     print("Frequency Powers found by FFT: ", frequency_powers)
 
     return 0

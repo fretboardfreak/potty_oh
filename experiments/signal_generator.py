@@ -15,9 +15,6 @@
 
 """A basic Signal Generator program."""
 
-import sys
-import os
-
 from potty_oh import common
 from potty_oh.waveform import Generator
 
