@@ -99,8 +99,21 @@ class Waveform(object):
         return float(len(self._wavedata)) / self.framerate
 
     def mix_down(self, other):
-        """Mix this waveform with another. """
+        """Mix this waveform with another."""
         return mix_down(self, other)
+
+    def insert(self, frame, waveform):
+        """Insert another waveform into this one at a specific frame."""
+        if waveform.channels != 1:
+            raise NotImplemented(
+                "Don't know how to insert stereo waveforms yet")
+        if self.channels != 1:
+            raise NotImplemented(
+                "Don't know how to insert stereo waveforms yet")
+        new = numpy.zeros(max(frame + len(waveform), len(self)))
+        for index, frm in enumerate(waveform.frames):
+            new[index + frame] = frm
+        return self.mix_down(new)
 
 
 class Generator(object):
