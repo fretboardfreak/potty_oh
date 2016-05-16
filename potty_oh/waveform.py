@@ -55,7 +55,15 @@ def mix_down(first, second):
     result = numpy.zeros(max(len(first_frameset), len(second_frameset)))
     for frame, (lfr, rfr) in enumerate(
             zip_longest(first_frameset, second_frameset, fillvalue=0.0)):
-        result[frame] = numpy.mean([float(lfr), float(rfr)])
+        # Mean halves the power of each signal. This is equivalent to what the
+        # air does in real life. This means we need to try and avoid
+        # attenuating signals exessively when we don't need to.
+        if float(lfr) != 0.0 and float(rfr) != 0.0:
+            result[frame] = numpy.mean([float(lfr), float(rfr)])
+        elif float(lfr) == 0.0:
+            result[frame] = rfr
+        else:
+            result[frame] = lfr
     return Waveform(result)
 
 
