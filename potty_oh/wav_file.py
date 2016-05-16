@@ -19,6 +19,7 @@ from pysndfile import construct_format, PySndfile
 
 from .common import Defaults
 
+
 def wav_format_code(encoding=None):
     """Calculate the format code for 'pcm16' encoded 'wav' files."""
     if not encoding:

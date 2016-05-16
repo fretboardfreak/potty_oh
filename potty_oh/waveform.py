@@ -74,7 +74,7 @@ class Waveform(object):
     """
     def __init__(self, wavedata, framerate=None):
         if not framerate:
-           framerate = Defaults.framerate
+            framerate = Defaults.framerate
         self.framerate = framerate
         self._set_wavedata(wavedata)
 
