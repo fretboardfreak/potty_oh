@@ -21,6 +21,25 @@ from itertools import zip_longest
 from .common import Defaults
 
 
+def seconds_to_frame(seconds, framerate=None):
+    """Given a number of seconds, calculate the equivalent length in frames."""
+    if framerate is None:
+        framerate = Defaults.framerate
+    return math.floor(float(framerate) * float(seconds))
+
+
+def frame_to_seconds(frame, framerate=None):
+    """Calculate the time in seconds repreesented by a number of frames."""
+    if framerate is None:
+        framerate = Defaults.framerate
+    return float(frame) / float(framerate)
+
+
+def quarter_note_length(tempo, beats_per_quarter=1):
+    """Calculate the length of a quarter note in seconds."""
+    return 60.0 / float(tempo) * float(beats_per_quarter)
+
+
 def mix_down(first, second):
     """Blend two Waveform together using a mathematical average.
 
