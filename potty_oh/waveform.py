@@ -163,6 +163,7 @@ class Generator(object):
         self.length = float(self.framecount) / self.framerate
         self.dprint('framecount = %s' % self.framecount)
         self.wavedata = numpy.zeros(self.framecount)
+        self.random_phase_shift = numpy.random.randint(0, 360)
 
     @property
     def waveform(self):
@@ -181,10 +182,9 @@ class Generator(object):
 
     def _sinusoid_amplitude(self, frame, frequency):
         """Calculate the amplitude of a sinusoid wave at a given frequency."""
-        # avoid divide by zero
-        frame = 0.001 if frame is 0 else frame
-        return math.sin(frame /
-                        ((self.framerate / frequency) / math.pi))
+        return math.sin(
+            self.random_phase_shift +
+            frame / ((self.framerate / frequency) / math.pi))
 
     def sin_constant(self, frequency, *args, **kwargs):
         """Sinusoid wave of constant frequency."""
