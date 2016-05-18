@@ -16,7 +16,7 @@
 """A basic Signal Generator program."""
 
 from potty_oh import common
-from potty_oh.waveform import Generator
+from potty_oh.signal_generator import Generator
 
 
 def whitenoise(args, generator):

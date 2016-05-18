@@ -33,7 +33,7 @@ from potty_oh.wav_file import wav_file_context
 from potty_oh.waveform import Waveform
 from potty_oh.waveform import seconds_to_frame
 from potty_oh.waveform import quarter_note_length
-from potty_oh.waveform import Generator
+from potty_oh.signal_generator import Generator
 
 
 def main():

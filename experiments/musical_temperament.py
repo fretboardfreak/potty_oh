@@ -25,7 +25,7 @@ import itertools
 from potty_oh.common import get_cmd_line_parser
 from potty_oh.common import ParserArguments
 from potty_oh.common import call_main
-from potty_oh.waveform import Generator
+from potty_oh.signal_generator import Generator
 from potty_oh.wav_file import wav_file_context
 from potty_oh.music.temperament import Temperament
 from potty_oh.music.pitch import Key

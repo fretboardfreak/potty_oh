@@ -12,7 +12,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-"""A Waveform or Signal Generator Library for creating audio waveforms."""
+"""A library for manipulating Waveform Objects."""
 
 import math
 import numpy
@@ -141,68 +141,3 @@ class Waveform(object):
         for index, frm in enumerate(waveform.frames):
             new[index + frame] = frm
         return self.mix_down(new)
-
-
-class Generator(object):
-    def __init__(self, length=1.0, framerate=44100, verbose=False):
-        self.length = length
-        self.framerate = framerate
-        self.verbose = verbose
-
-    def _init(self, length=None, framerate=None, verbose=None, **kwargs):
-        if length:
-            self.length = length
-        if framerate:
-            self.framerate = framerate
-        if verbose:
-            self.verbose = verbose
-
-        # framecount = frames / sec * sec
-        self.framecount = int(self.framerate * self.length)
-        # rectify length to actual framecount
-        self.length = float(self.framecount) / self.framerate
-        self.dprint('framecount = %s' % self.framecount)
-        self.wavedata = numpy.zeros(self.framecount)
-        self.random_phase_shift = numpy.random.randint(0, 360)
-
-    @property
-    def waveform(self):
-        return Waveform(self.wavedata, self.framerate)
-
-    def dprint(self, msg):
-        """Conditionally print a debugging message."""
-        if self.verbose:
-            print(msg)
-
-    def whitenoise(self, *args, **kwargs):
-        """Random Gaussian White Noise."""
-        self._init(*args, **kwargs)
-        self.wavedata = numpy.random.randn(self.framecount)
-        return self.wavedata
-
-    def _sinusoid_amplitude(self, frame, frequency):
-        """Calculate the amplitude of a sinusoid wave at a given frequency."""
-        return math.sin(
-            self.random_phase_shift +
-            frame / ((self.framerate / frequency) / math.pi))
-
-    def sin_constant(self, frequency, *args, **kwargs):
-        """Sinusoid wave of constant frequency."""
-        self._init(*args, **kwargs)
-        frequency = float(frequency)
-        for frame in range(len(self.wavedata)):
-            amplitude = self._sinusoid_amplitude(frame, frequency)
-            self.wavedata[frame] = amplitude
-        return self.waveform
-
-    def sin_linear(self, start_freq, end_freq, *args, **kwargs):
-        """Sinusoid wave of linearly changing frequency."""
-        self._init(*args, **kwargs)
-        for frame in range(len(self.wavedata)):
-            # freq = start_freq + frame * freq_rate
-            # freq_rate = total_freq_change / framecount
-            frequency = start_freq + frame * (
-                float(end_freq - start_freq) / self.framecount)
-            amplitude = self._sinusoid_amplitude(frame, frequency)
-            self.wavedata[frame] = amplitude
-        return self.waveform

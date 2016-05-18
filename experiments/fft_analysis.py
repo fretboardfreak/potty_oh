@@ -21,7 +21,7 @@ from scipy import fft
 
 from potty_oh.common import get_cmd_line_parser
 from potty_oh.common import call_main
-from potty_oh.waveform import Generator
+from potty_oh.signal_generator import Generator
 
 
 def analyze_waveform(waveform):

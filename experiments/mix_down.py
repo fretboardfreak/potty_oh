@@ -17,7 +17,8 @@
 
 from potty_oh import common
 from potty_oh.wav_file import wav_file_context
-from potty_oh.waveform import Generator, mix_down
+from potty_oh.waveform import mix_down
+from potty_oh.signal_generator import Generator
 from potty_oh.music.pitch import Key
 from potty_oh.music.interval import Interval
 
