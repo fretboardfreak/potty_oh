@@ -18,16 +18,19 @@ import sys
 import argparse
 
 
-class Defaults:
+class _Defaults:
     tempo = 100
-    framerate = 44100
+    framerate = 8000
     channels = 1
     frequency = 440.0
-    length = 1
+    length = 1.0
     filename = 'signal.wav'
     debug = False
     verbose = False
 
+# Use an instance instead of class type so any changes to the defaults will be
+# available in other modules.
+defaults = _Defaults()
 
 def get_cmd_line_parser(version=None, *args, **kwargs):
     """Initialize a useful argument parser that can be reused."""
@@ -54,23 +57,25 @@ class ParserArguments(object):
     @staticmethod
     def set_defaults(parser, filename=None, length=None, plot=None,
                      frequency=None, tempo=None, debug=None, verbose=None,
-                     **kwargs):
+                     framerate=None, **kwargs):
         if not filename:
-            filename = Defaults.filename
+            filename = defaults.filename
         if not length:
-            length = Defaults.length
+            length = defaults.length
         if not frequency:
             # TODO: split up pitch module so this doesn't have to be literal
-            frequency = Defaults.frequency
+            frequency = defaults.frequency
         if not tempo:
-            tempo = Defaults.tempo
+            tempo = defaults.tempo
         if not debug:
-            debug = Defaults.debug
+            debug = defaults.debug
         if not verbose:
-            verbose = Defaults.verbose
+            verbose = defaults.verbose
+        if not framerate:
+            framerate = defaults.framerate
         parser.set_defaults(filename=filename, length=length,
                             frequency=frequency, debug=debug, tempo=tempo,
-                            verbose=verbose, **kwargs)
+                            verbose=verbose, framerate=framerate, **kwargs)
         return parser
 
     @staticmethod
@@ -108,16 +113,22 @@ class ParserArguments(object):
             help='Tempo to use for the generated signals.')
         return parser
 
+    @staticmethod
+    def framerate(parser):
+        parser.add_argument(
+            '-F', '--framerate', help='framerate to use.', type=int)
+        return parser
+
 
 def dprint(msg):
     """Conditionally print a debug message."""
-    if Defaults.debug:
+    if defaults.debug:
         print(msg)
 
 
 def vprint(msg):
     """Conditionally print a verbose message."""
-    if Defaults.verbose:
+    if defaults.verbose:
         print(msg)
 
 
@@ -137,7 +148,7 @@ class DebugAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         print('Enabling debugging output.')
-        Defaults.debug = True
+        defaults.debug = True
         setattr(namespace, self.dest, True)
 
 
@@ -149,7 +160,7 @@ class VerboseAction(DebugAction):
 
     def __call__(self, parser, namespace, values, option_string=None):
         print('Enabling verbose output.')
-        Defaults.verbose = True
+        defaults.verbose = True
         setattr(namespace, self.dest, True)
 
 
@@ -163,7 +174,7 @@ def call_main(main):
         print('...interrupted by user, exiting.')
         sys.exit(1)
     except Exception as exc:
-        if Defaults.debug:
+        if defaults.debug:
             raise
         else:
             print('Unhandled Error:\n{}'.format(exc))

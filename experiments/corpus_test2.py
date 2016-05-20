@@ -29,6 +29,7 @@ from music21 import corpus
 from potty_oh.common import get_cmd_line_parser
 from potty_oh.common import call_main
 from potty_oh.common import ParserArguments
+from potty_oh.common import defaults
 from potty_oh.wav_file import wav_file_context
 from potty_oh.waveform import Waveform
 from potty_oh.waveform import seconds_to_frame
@@ -40,8 +41,10 @@ def main():
     parser = get_cmd_line_parser(description=__doc__)
     ParserArguments.filename(parser)
     ParserArguments.tempo(parser)
+    ParserArguments.framerate(parser)
     ParserArguments.set_defaults(parser)
     args = parser.parse_args()
+    defaults.framerate = args.framerate
 
     print('Generating Signal:')
     sig_gen = Generator()

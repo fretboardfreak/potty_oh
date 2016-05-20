@@ -17,7 +17,7 @@
 from contextlib import contextmanager
 from pysndfile import construct_format, PySndfile
 
-from .common import Defaults
+from .common import defaults
 
 
 def wav_format_code(encoding=None):
@@ -35,9 +35,9 @@ def open(filename, mode=None, format=None, channels=None,
     if not format:
         fmt = wav_format_code()
     if not channels:
-        channels = Defaults.channels
+        channels = defaults.channels
     if not framerate:
-        framerate = Defaults.framerate
+        framerate = defaults.framerate
     return PySndfile(filename, mode, fmt, channels, framerate)
 
 

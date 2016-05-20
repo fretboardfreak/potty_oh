@@ -49,7 +49,10 @@ def main():
     common.ParserArguments.set_defaults(parser, type='constant')
     args = parser.parse_args()
 
-    sg = Generator(length=args.length, verbose=args.debug)
+    common.defaults.framerate = 8000
+
+    sg = Generator(length=args.length, framerate=common.defaults.framerate,
+                   verbose=args.debug)
 
     ui_map[args.type](args, sg)
     waveform = sg.waveform

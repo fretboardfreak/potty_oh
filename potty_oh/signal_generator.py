@@ -17,6 +17,7 @@
 import math
 import numpy
 
+from .common import defaults
 from .waveform import Waveform
 
 
@@ -26,9 +27,13 @@ class Generator(object):
     Each signal produced is generated independently of previously generated
     signals.
     """
-    def __init__(self, length=1.0, framerate=44100, verbose=False):
+    def __init__(self, length=None, framerate=None, verbose=False):
         self.length = length
+        if not length:
+            self.length = defaults.length
         self.framerate = framerate
+        if not framerate:
+            self.framerate = defaults.framerate
         self.verbose = verbose
 
     def _init(self, length=None, framerate=None, verbose=None, **kwargs):
@@ -45,7 +50,7 @@ class Generator(object):
         self.length = float(self.framecount) / self.framerate
         self.dprint('framecount = %s' % self.framecount)
         self.wavedata = numpy.zeros(self.framecount)
-        self.random_phase_shift = numpy.random.randint(0, 360)
+        self.random_phase_shift = numpy.random.random() * 2 * math.pi
 
     @property
     def waveform(self):

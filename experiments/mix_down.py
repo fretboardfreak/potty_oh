@@ -27,9 +27,11 @@ def main():
     parser = common.get_cmd_line_parser(description=__doc__)
     common.ParserArguments.filename(parser)
     common.ParserArguments.length(parser)
+    common.ParserArguments.framerate(parser)
     common.ParserArguments.set_defaults(parser, type='constant',
                                         length=2.0)
     args = parser.parse_args()
+    common.defaults.framerate = args.framerate
 
     sg = Generator(length=args.length, verbose=args.debug)
 

@@ -18,20 +18,20 @@ import math
 import numpy
 from itertools import zip_longest
 
-from .common import Defaults
+from .common import defaults
 
 
 def seconds_to_frame(seconds, framerate=None):
     """Given a number of seconds, calculate the equivalent length in frames."""
     if framerate is None:
-        framerate = Defaults.framerate
+        framerate = defaults.framerate
     return math.floor(float(framerate) * float(seconds))
 
 
 def frame_to_seconds(frame, framerate=None):
     """Calculate the time in seconds repreesented by a number of frames."""
     if framerate is None:
-        framerate = Defaults.framerate
+        framerate = defaults.framerate
     return float(frame) / float(framerate)
 
 
@@ -74,7 +74,7 @@ class Waveform(object):
     """
     def __init__(self, wavedata, framerate=None):
         if not framerate:
-            framerate = Defaults.framerate
+            framerate = defaults.framerate
         self.framerate = framerate
         self._set_wavedata(wavedata)
 
