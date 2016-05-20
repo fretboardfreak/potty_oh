@@ -19,7 +19,6 @@ import numpy
 from itertools import zip_longest
 
 from .common import Defaults
-from .effects import mix_down
 
 
 def seconds_to_frame(seconds, framerate=None):
@@ -39,6 +38,33 @@ def frame_to_seconds(frame, framerate=None):
 def quarter_note_length(tempo, beats_per_quarter=1):
     """Calculate the length of a quarter note in seconds."""
     return 60.0 / float(tempo) * float(beats_per_quarter)
+
+
+def mix_down(first, second):
+    """Blend two Waveform objects together using a mathematical average.
+
+    Blend two Waveform together using a mathematical average. Mean halves the
+    power of each signal. This is equivalent to what the air does in real life.
+    This means we need to try and avoid attenuating signals exessively when we
+    don't need to.
+    """
+    first_frameset = first
+    if isinstance(first, Waveform):
+        first_frameset = first.frames
+    second_frameset = second
+    if isinstance(second, Waveform):
+        second_frameset = second.frames
+    result = numpy.zeros(max(len(first_frameset), len(second_frameset)))
+    for frame, (lfr, rfr) in enumerate(
+            zip_longest(first_frameset, second_frameset, fillvalue=0.0)):
+        # see attenuation note in docstring
+        if float(lfr) != 0.0 and float(rfr) != 0.0:
+            result[frame] = numpy.mean([float(lfr), float(rfr)])
+        elif float(lfr) == 0.0:
+            result[frame] = rfr
+        else:
+            result[frame] = lfr
+    return Waveform(result)
 
 
 class Waveform(object):
