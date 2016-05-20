@@ -104,9 +104,9 @@ class Waveform(object):
             raise ValueError('Waveform only supports 1 or 2 channel audio.')
 
     def __repr__(self):
-        return "<{}: framerate={}, channels={}, wavedata=({})>".format(
+        return "<{}: framerate={}, channels={}, frames=({})>".format(
                 self.__class__.__name__, self.framerate, self.channels,
-                self.wavedata.shape)
+                self.frames.shape)
 
     @property
     def frames(self):
