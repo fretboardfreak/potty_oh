@@ -48,7 +48,7 @@ class Generator(object):
         self.framecount = int(self.framerate * self.length)
         # rectify length to actual framecount
         self.length = float(self.framecount) / self.framerate
-        self.dprint('framecount = %s' % self.framecount)
+        self.dprint('generating %s frames' % self.framecount)
         self.wavedata = numpy.zeros(self.framecount)
         self.random_phase_shift = numpy.random.random() * 2 * math.pi
 

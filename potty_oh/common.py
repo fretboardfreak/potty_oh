@@ -32,6 +32,7 @@ class _Defaults:
 # available in other modules.
 defaults = _Defaults()
 
+
 def get_cmd_line_parser(version=None, *args, **kwargs):
     """Initialize a useful argument parser that can be reused."""
     parser = argparse.ArgumentParser(*args, **kwargs)
