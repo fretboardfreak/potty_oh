@@ -36,14 +36,20 @@ def analyze_whole_waveform(waveform):
     - 2205 Frames at 44.1K Frames/sec
     """
     desired_precision = 10  # Hz
-    window_size = int(waveform.framerate / 2.0 / desired_precision)
+    window_size = int(waveform.framerate / 2 / desired_precision)
     hanning_window = hanning(window_size)
     spectrum = {}
-    for start_frame in range(0, len(waveform.frames), len(hanning_window)):
+    for start_frame in range(0, len(waveform.frames),
+                             int((len(hanning_window) / 2) - 1)):
         window = zeros(len(hanning_window))
+        # Do I need to add a first frame case to start with half a window to
+        # match the half window at the end of stream?
         for frame in range(len(window)):
-            window[frame] = (hanning_window[frame] *
-                             waveform.frames[start_frame + frame])
+            if start_frame + frame < len(waveform.frames):
+                window[frame] = (hanning_window[frame] *
+                                 waveform.frames[start_frame + frame])
+            else:
+                window[frame] = 0
         spectrum[start_frame] = analyze_window(Waveform(window))
     return spectrum
 
