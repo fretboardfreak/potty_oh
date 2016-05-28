@@ -50,7 +50,10 @@ class Generator(object):
         self.length = float(self.framecount) / self.framerate
         self.dprint('generating %s frames' % self.framecount)
         self.wavedata = numpy.zeros(self.framecount)
-        self.random_phase_shift = numpy.random.random() * 2 * math.pi
+        if 'phase' in kwargs:
+            self.random_phase_shift = kwargs['phase']
+        else:
+            self.random_phase_shift = numpy.random.random() * 2 * math.pi
 
     @property
     def waveform(self):
