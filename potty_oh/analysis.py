@@ -17,6 +17,7 @@
 from math import sqrt
 from numpy import round, zeros
 from scipy import fftpack, hanning
+from collections import OrderedDict
 
 from potty_oh.waveform import Waveform
 
@@ -38,7 +39,7 @@ def analyze_whole_waveform(waveform):
     desired_precision = 10  # Hz
     window_size = int(waveform.framerate / 2 / desired_precision)
     hanning_window = hanning(window_size)
-    spectrum = {}
+    spectrum = OrderedDict()
     for start_frame in range(0, len(waveform.frames),
                              int((len(hanning_window) / 2) - 1)):
         window = zeros(len(hanning_window))
@@ -55,7 +56,20 @@ def analyze_whole_waveform(waveform):
 
 
 def analyze_window(waveform):
-    """Perform FFT frequency analysis against the given waveform.
+    """"""
+    frequencies, power_domain, frequency_domain = do_fft(waveform)
+    spectrum = OrderedDict()
+    for freq, strength, coef in zip(frequencies, power_domain,
+                                    frequency_domain):
+        if strength != 0.0:
+            spectrum[freq] = (strength, coef)
+    return spectrum
+
+
+def do_fft(waveform):
+    """Perform an FFT on the waveform.
+
+    Returns the tuple: (frequencies, power_domain, frequency_domain)
     """
     frequency_coefficients = fftpack.fft(waveform.frames)
     power_coefficients = [sqrt(pow(x.real, 2) + pow(x.imag, 2))
@@ -65,8 +79,4 @@ def analyze_window(waveform):
     frequency_domain = frequency_coefficients[:bins]
     frequencies = fftpack.fftfreq(len(frequency_domain),
                                   1.0 / waveform.framerate)
-    powers = {freq: (strength, coef)
-              for freq, strength, coef in zip(frequencies, power_domain,
-                                              frequency_domain)
-              if strength != 0.0}
-    return powers
+    return frequencies, power_domain, frequency_domain
