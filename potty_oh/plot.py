@@ -16,10 +16,14 @@
 
 from matplotlib import pyplot
 
+from .waveform import Waveform
+
 
 def plot_waveform(wavedata, channels, start_frame, end_frame):
     """Plot the given waveform with 1 channel per subplot."""
     try:
+        if isinstance(wavedata, Waveform):
+            wavedata = wavedata.frames
         wavedata = wavedata.transpose()
         _, subplots = pyplot.subplots(1, channels)
         if channels == 1:
