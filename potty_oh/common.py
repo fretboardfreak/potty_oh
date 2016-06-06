@@ -20,7 +20,7 @@ import argparse
 
 class _Defaults:
     tempo = 100
-    framerate = 8000
+    framerate = 44100
     channels = 1
     frequency = 440.0
     length = 1.0
