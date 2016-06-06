@@ -14,8 +14,6 @@
 
 """effects.py: a library of effects to apply to waveforms."""
 
-from matplotlib import pyplot
-
 from .waveform import Waveform
 
 
