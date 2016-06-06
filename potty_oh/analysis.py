@@ -77,6 +77,6 @@ def do_fft(waveform):
     bins = int(len(power_coefficients)/2)
     power_domain = round(power_coefficients[:bins])
     frequency_domain = frequency_coefficients[:bins]
-    frequencies = fftpack.fftfreq(len(frequency_domain),
+    frequencies = fftpack.fftfreq(len(power_coefficients),
                                   1.0 / waveform.framerate)
     return frequencies, power_domain, frequency_domain
