@@ -101,10 +101,14 @@ class Generator(object):
 
 
 class FFTGenerator(Generator):
-    '''
+    '''Use an Inverse Fourier Transform to create a multifrequency sinusoid.
+
+    The generated sinusoid is a single waveform comprised of multiple
+    frequencies that were not generated as their own fundamental waveforms
+    first.
     '''
     def __init__(self, length=None, framerate=None, verbose=False):
-        self.approx_desired_precision = 10
+        self.approx_desired_precision = 10  # Hz
         self.length = length
         if not length:
             self.length = defaults.length
@@ -115,12 +119,18 @@ class FFTGenerator(Generator):
 
     @property
     def window_size(self):
+        """Length of a window size as determined by the desired precision."""
         return int(self.framerate / 2 / self.approx_desired_precision)
 
     @property
+    def new_window(self):
+        """Create a new empty array for a window."""
+        return numpy.zeros(self.window_size)
+
+    @property
     def frequencies(self):
-        return fftpack.fftfreq(int(self.window_size / 2),
-                               1.0 / self.framerate)
+        """The frequencies mapped to bins in the frequency domain."""
+        return fftpack.fftfreq(self.window_size, 1.0 / self.framerate)
 
     def _get_frequency_bin(self, requested_freq):
         """Find the FFT bin corresponding closest to requested frequency."""
@@ -133,22 +143,24 @@ class FFTGenerator(Generator):
             if tmp_diff < diff:
                 diff = tmp_diff
                 closest_index = index
+        self.dprint('using bin %s for freq %s' %
+                    (closest_index, requested_freq))
         return closest_index
 
-    def single_frequency(self, frequency, **kwargs):
+    def generate(self, frequencies, **kwargs):
+        """Generate the requested waveform."""
         super(FFTGenerator, self)._init(**kwargs)
-        # TODO: this is only generating a short waveform, something is still
-        #       not quite right here...
-        ifft_bin = self._get_frequency_bin(frequency)
-        self.wavedata[ifft_bin] = self.framerate
-        return fftpack.ifft(self.wavedata)
-
-    def multi_frequency(self, frequencies, **kwargs):
-        super(FFTGenerator, self)._init(**kwargs)
-        # TODO: this is only generating a short waveform, something is still
-        #       not quite right here...
+        wavedata = Waveform(numpy.zeros(int(self.framerate * self.length)))
+        freq_domain_stub = self.new_window
         for frequency in frequencies:
             ifft_bin = self._get_frequency_bin(frequency)
-            self.wavedata[ifft_bin] = self.framerate
-        self.wavedata = normalize(numpy.real(fftpack.ifft(self.wavedata)))
-        return self.waveform
+            freq_domain_stub[ifft_bin] = self.framerate / len(frequencies)
+        window = Waveform(normalize(numpy.real(
+            fftpack.ifft(freq_domain_stub))))
+        for count, frame in enumerate(range(0, self.framecount,
+                                            self.window_size)):
+            wavedata = wavedata.insert(frame, window)
+        self.dprint('{} generated {}, {} length windows'.format(
+            self.__class__.__name__, count, self.window_size))
+        self.wavedata = wavedata
+        return wavedata
