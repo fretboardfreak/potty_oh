@@ -23,17 +23,23 @@ def main():
     parser = common.get_cmd_line_parser(description=__doc__)
     common.ParserArguments.filename(parser)
     common.ParserArguments.plot(parser)
-    common.ParserArguments.frequency(parser)
+    common.ParserArguments.length(parser)
     common.ParserArguments.set_defaults(parser, type='constant')
+
+    default_freqs = [300, 440]
+    parser.add_argument(
+        '-f', '--frequencies', action='append', dest='freqs', type=float,
+        default=[], help="Specify the frequencies to use. Defaults to "
+                         "%s." % default_freqs)
     args = parser.parse_args()
 
-    sg = FFTGenerator(framerate=args.framerate,
+    freqs = default_freqs
+    if len(args.freqs) > 0:
+        freqs = args.freqs
+
+    sg = FFTGenerator(framerate=args.framerate, length=args.length,
                       verbose=args.debug)
-    waveform = sg.multi_frequency([440, 660])
-    waveform = waveform.insert(len(waveform) - 1, waveform)
-    waveform = waveform.insert(len(waveform) - 1, waveform)
-    waveform = waveform.insert(len(waveform) - 1, waveform)
-    waveform = waveform.insert(len(waveform) - 1, waveform)
+    waveform = sg.generate(freqs)
 
     if args.plot:
         import potty_oh.plot as plot
