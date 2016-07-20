@@ -52,8 +52,8 @@ def main():
 
     print('Generating a score...')
     random_note_count = 50
-    random_note_speeds = [0.25, 0.5]
-    print('100 Random 1/8th and 1/16th notes in rapid succession...')
+    random_note_speeds = [0.5, 1]
+    print('100 Random 1/8th and 1/4th notes in rapid succession...')
     for i in range(random_note_count):
         note = Note(random.choice(rscale.pitches))
         note.duration.quarterLength = random.choice(random_note_speeds)
