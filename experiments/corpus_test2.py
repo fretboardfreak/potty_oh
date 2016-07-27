@@ -35,6 +35,7 @@ from potty_oh.waveform import Waveform
 from potty_oh.waveform import seconds_to_frame
 from potty_oh.waveform import quarter_note_length
 from potty_oh.signal_generator import Generator
+from potty_oh.audify import audify_to_file
 
 
 def main():
@@ -43,6 +44,7 @@ def main():
     ParserArguments.tempo(parser)
     ParserArguments.framerate(parser)
     ParserArguments.set_defaults(parser)
+    ParserArguments.best(parser)
     args = parser.parse_args()
     defaults.framerate = args.framerate
 
@@ -54,6 +56,10 @@ def main():
     # work = corpus.parse(numpy.random.choice(corpus.getComposer('bach')))
     work = corpus.parse(numpy.random.choice(corpus.getCorePaths()))
     notes = work.flat.notes
+    if args.best:
+        audify_to_file(notes, args.tempo, args.filename, args.verbose)
+        return 0
+
     note_count = len(notes)
     try:
         for count, note in enumerate(notes):
