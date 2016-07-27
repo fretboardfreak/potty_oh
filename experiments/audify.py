@@ -28,7 +28,7 @@ from potty_oh.common import call_main
 from potty_oh.common import ParserArguments
 from potty_oh.common import defaults
 from potty_oh.wav_file import wav_file_context
-from potty_oh.audify import audify_basic
+from potty_oh.audify import audify_to_file
 
 
 def main():
@@ -37,6 +37,7 @@ def main():
     ParserArguments.tempo(parser)
     ParserArguments.framerate(parser)
     ParserArguments.set_defaults(parser)
+    ParserArguments.best(parser)
     args = parser.parse_args()
     defaults.framerate = args.framerate
 
@@ -76,12 +77,14 @@ def main():
     print('Composition finished:')
     song.show('txt')
 
-    print('Audifying the song...')
-    wave = audify_basic(song, args.tempo)
-
-    print('Writing Song to file {}...'.format(args.filename))
-    with wav_file_context(args.filename) as fout:
-        fout.write_frames(wave.frames)
+    if args.best:
+        print('Audifying the song to file "{}"...')
+        wave = audify_to_file(song, args.tempo, args.filename, verbose=True)
+    else:
+        wave = audify_basic(song, args.tempo, verbose=True)
+        print('Writing Song to file "{}"...'.format(args.filename))
+        with wav_file_context(args.filename) as fout:
+            fout.write_frames(wave.frames)
 
     return 0
 
