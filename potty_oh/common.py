@@ -120,6 +120,13 @@ class ParserArguments(object):
             '-F', '--framerate', help='framerate to use.', type=int)
         return parser
 
+    @staticmethod
+    def best(parser):
+        parser.add_argument(
+            '--best', action='store_true',
+            help=('Use best algorithm implemented so far instead of '
+                  'the original one available when the experiment '
+                  'was first tried.'))
 
 def dprint(msg):
     """Conditionally print a debug message."""
