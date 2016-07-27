@@ -82,8 +82,18 @@ class Generator(object):
         """Sinusoid wave of constant frequency."""
         self._init(*args, **kwargs)
         frequency = float(frequency)
-        for frame in range(len(self.wavedata)):
+        fade_frames = 0.1 * self.framecount
+        fade_point = self.framecount - fade_frames
+        for frame in range(self.framecount):
             amplitude = self._sinusoid_amplitude(frame, frequency)
+            if frame > fade_point:  # fade the end of the note
+                _old = amplitude
+                amplitude *= 1 - (frame - fade_point) / fade_frames
+                if frame % 50 == 0:
+                    self.dprint('fade from %s to %s' % (_old, amplitude))
+            if frame < fade_frames:
+                _old = amplitude
+                amplitude *= frame / fade_frames
             self.wavedata[frame] = amplitude
         return self.waveform
 
