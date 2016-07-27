@@ -18,11 +18,12 @@ from .waveform import Waveform
 from .waveform import quarter_note_length
 from .waveform import seconds_to_frame
 from .signal_generator import Generator
+from .wav_file import wav_file_context
 
 
-def audify_basic(score, tempo):
+def audify_basic(score, tempo, verbose=False):
     """Audify a music21 score using the basic signal generater."""
-    sig_gen = Generator()
+    sig_gen = Generator(verbose)
     song = Waveform([])
     qnl = quarter_note_length(tempo)
 
@@ -44,3 +45,19 @@ def audify_basic(score, tempo):
         print('Stopping song generating here...')
 
     return song
+
+def audify_to_file(score, tempo, filename, verbose=False):
+    sig_gen = Generator(verbose)
+    song = Waveform([])
+    qnl = quarter_note_length(tempo)
+
+    notes = score.flat.notes
+    note_count = len(notes)
+    with wav_file_context(filename) as fout:
+        for count, note in enumerate(notes):
+            print('{}/{}: {} [{}]: {} {}'.format(
+                count, note_count, note.offset, note.duration.quarterLength,
+                note.pitch, note.pitch.frequency))
+            note_length = qnl * note.quarterLength
+            fout.write_frames(sig_gen.sin_constant(
+                note.pitch.frequency, length=note_length).frames)
