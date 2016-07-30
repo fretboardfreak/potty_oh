@@ -2,11 +2,6 @@
 Potty-Oh: Python Audio
 ======================
 
-:author: Curtis Sand (a.k.a. fret, fretboardfreak)
-:date: 160507
-
-**Potty-Oh**: **P**\ython **Audio**
-
 :mirrors:
     - https://github.com/fretboardfreak/potty_oh
     - https://bitbucket.org/fret/potty_oh
