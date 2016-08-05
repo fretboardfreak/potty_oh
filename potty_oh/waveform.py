@@ -16,7 +16,11 @@
 
 import math
 import numpy
-from itertools import zip_longest
+
+try:
+    from itertools import zip_longest
+except ImportError:  # python 2...  bleh!
+    from itertools import izip_longest as zip_longest
 
 from .common import defaults
 
