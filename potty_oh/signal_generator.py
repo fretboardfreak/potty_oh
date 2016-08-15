@@ -29,7 +29,8 @@ class Generator(object):
     Each signal produced is generated independently of previously generated
     signals.
     """
-    def __init__(self, length=None, framerate=None, verbose=False):
+    def __init__(self, length=None, framerate=None, verbose=False,
+                 fade_percentage=None):
         self.length = length
         if not length:
             self.length = defaults.length
@@ -37,6 +38,7 @@ class Generator(object):
         if not framerate:
             self.framerate = defaults.framerate
         self.verbose = verbose
+        self.fade_percentage = fade_percentage if fade_percentage else 0.02
 
     def _init(self, length=None, framerate=None, verbose=None, **kwargs):
         if length:
@@ -82,7 +84,7 @@ class Generator(object):
         """Sinusoid wave of constant frequency."""
         self._init(*args, **kwargs)
         frequency = float(frequency)
-        fade_frames = 0.1 * self.framecount
+        fade_frames = self.fade_percentage * self.framecount
         fade_point = self.framecount - fade_frames
         for frame in range(self.framecount):
             amplitude = self._sinusoid_amplitude(frame, frequency)
