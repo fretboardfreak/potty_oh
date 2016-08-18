@@ -13,7 +13,7 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 
-"""A basic Signal Generator program."""
+"""An FFT Signal Generator program."""
 
 from potty_oh import common
 from potty_oh.signal_generator import FFTGenerator
