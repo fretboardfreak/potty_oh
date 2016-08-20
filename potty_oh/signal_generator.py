@@ -74,11 +74,13 @@ class Generator(object):
         self.wavedata = numpy.random.randn(self.framecount)
         return self.wavedata
 
+    def _sinusoid_angle(self, frame, frequency):
+        """Calculate the sinusoid angle for a given frame and frequency."""
+        return 2 * math.pi * frequency * frame / self.framerate
+
     def _sinusoid_value(self, frame, frequency):
         """Calculate the value of a sinusoid wave at a given frequency."""
-        return math.sin(
-            self.phase +
-            frame / ((self.framerate / frequency) / math.pi))
+        return math.sin(self.phase + self._sinusoid_angle(frame, frequency))
 
     def sin_constant(self, frequency, *args, **kwargs):
         """Sinusoid wave of constant frequency."""
