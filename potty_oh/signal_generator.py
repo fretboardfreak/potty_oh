@@ -174,3 +174,138 @@ class FFTGenerator(Generator):
             self.__class__.__name__, count, self.window_size))
         self.wavedata = wavedata
         return wavedata
+
+
+class ContinuousGenerator(Generator):
+    """Generate and accumulate a continuous signal accross multiple notes.
+
+    For the description below,
+        LengthA="lenth_of_note - (1/2 * transition_length)"
+    and
+        LengthB="length_of_note - transition_length".
+
+    For the first note generate a constant note of length LengthA.
+
+    For subsequent notes generate a linear signal from the freq. of the first
+    note to that of the second of the set transition length, followed by a
+    constant note of length LengthB.
+
+    If the keyword "end=True" is used then the constant portion of the length
+    should only be LengthA. ::
+
+        |         |            |            |
+        {------}\ | LengthB    | LengthA    |
+        |        \|            |            |
+        | LengthA |\           |/{----------}
+        |         | \{-------}/|            |
+
+    Note: Due to the fact that this generator currently ignores the phase of
+    the sinusoid being generated, when the frequency is modulated during a
+    transition period there are some unfortunate problems. When the frequency
+    of the waveform shifts we need to compensate by adding a phase shift so
+    that we are using the same phase angle of a sinusoid of a new frequency.
+    Since we ignore phase though, both frequency and phase shift and we end up
+    seeing an antialiased waveform of an apparent frequency much higher than
+    either of the two frequencies being transitioned between.
+
+    TODO: See if I can figure out the appropriate phase calculation to anchor
+    the phase angle of the sinusoid as the frequency shifts during the
+    transition period.
+
+    """
+    def __init__(self, length=None, framerate=None, verbose=False):
+        super(ContinuousGenerator, self).__init__(length, framerate, verbose)
+        self.phase = 0  # don't do any random phase shifting
+        self.frequency = 0.001  # avoid divide by zero
+        self.end = False
+        self.start = True
+        self.last_frame = 0
+        self.wavedata = numpy.zeros(1)
+        self.transition_length = int(self.framerate * 0.1)
+        if self.transition_length % 2 != 0:  # need even length transition
+            self.transition_length += 1
+
+    @property
+    def _constant_length(self):
+        adjustment = self.transition_length
+        if len(self.wavedata) <= 1 or self.end:
+            adjustment /= 2
+        return int(self.framecount - adjustment)
+
+    def _init(self, frequency=None, length=None, verbose=None, end=None,
+              **kwargs):
+        if frequency:
+            self.last_frequency = self.frequency
+            self.frequency = frequency
+        if length:
+            self.length = length
+        if verbose:
+            self.verbose = verbose
+        if end:
+            self.end = end
+
+        # framecount = frames / sec * sec
+        self.framecount = int(self.framerate * self.length)
+        # rectify length to actual framecount
+        self.length = float(self.framecount) / self.framerate
+
+    def _prep_wavedata(self, transition=False):
+        # save the frame where the next note starts
+        adjustment = self.transition_length
+        if not transition:
+            adjustment = self._constant_length
+        new_block = numpy.zeros(adjustment)
+        self.wavedata = numpy.concatenate((self.wavedata, new_block))
+
+    def _constant(self):
+        """Append sinusoid wave of constant frequency to wavedata."""
+        self.dprint('constant freq from frame %s to %s' %
+                    (self.last_frame,
+                     self.last_frame + self._constant_length))
+        frequency = float(self.frequency)
+        for frame in range(self.last_frame,
+                           self.last_frame + self._constant_length):
+            value = self._sinusoid_value(frame, frequency)
+            print('const frame %s at value %s at %s' % (
+                frame, value, frequency))
+            self.wavedata[frame] = value
+        self.last_frame = frame
+
+    def _transition(self):
+        """Append sinusoid wave of linearly changing frequency to wavedata."""
+        self.dprint('transition from frame %s to %s' %
+                    (self.last_frame,
+                     self.last_frame + self.transition_length))
+        for frame in range(self.last_frame,
+                           self.last_frame + self.transition_length):
+            modifier = ((frame - self.last_frame) *
+                        float(self.frequency - self.last_frequency) /
+                        self.transition_length)
+            frequency = (self.last_frequency + modifier)
+            value = self._sinusoid_value(frame, frequency)
+            print('transition frame %s at %s value %s: mod %s' % (
+                frame, frequency, value, modifier))
+            self.wavedata[frame] = value
+        self.last_frame = frame
+
+    def generate(self, frequency, length, end=False, *args, **kwargs):
+        self._init(frequency=frequency, length=length, end=end,
+                   *args, **kwargs)
+        self.dprint('generating %s new frames at %s' % (self.framecount,
+                                                        frequency))
+        if self.start:
+            self.dprint('Starting initial frequency in the signal...')
+            self._prep_wavedata()
+            self._constant()
+            self.dprint('signal is now %s long' % len(self.wavedata))
+            self.start = False
+        else:
+            self.dprint('Adding transition... %s to %s' % (
+                self.last_frequency, self.frequency))
+            self._prep_wavedata(transition=True)
+            self._transition()
+            self.dprint('  transition now %s long' % len(self.wavedata))
+            self.dprint('Adding the %s note...' % self.frequency)
+            self._prep_wavedata()
+            self._constant()
+            self.dprint('signal is now %s long' % len(self.wavedata))
