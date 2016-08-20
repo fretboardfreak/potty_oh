@@ -55,9 +55,9 @@ class Generator(object):
         self.dprint('generating %s frames' % self.framecount)
         self.wavedata = numpy.zeros(self.framecount)
         if 'phase' in kwargs:
-            self.random_phase_shift = kwargs['phase']
+            self.phase = kwargs['phase']
         else:
-            self.random_phase_shift = numpy.random.random() * 2 * math.pi
+            self.phase = numpy.random.random() * 2 * math.pi
 
     @property
     def waveform(self):
@@ -74,10 +74,10 @@ class Generator(object):
         self.wavedata = numpy.random.randn(self.framecount)
         return self.wavedata
 
-    def _sinusoid_amplitude(self, frame, frequency):
-        """Calculate the amplitude of a sinusoid wave at a given frequency."""
+    def _sinusoid_value(self, frame, frequency):
+        """Calculate the value of a sinusoid wave at a given frequency."""
         return math.sin(
-            self.random_phase_shift +
+            self.phase +
             frame / ((self.framerate / frequency) / math.pi))
 
     def sin_constant(self, frequency, *args, **kwargs):
@@ -87,28 +87,26 @@ class Generator(object):
         fade_frames = self.fade_percentage * self.framecount
         fade_point = self.framecount - fade_frames
         for frame in range(self.framecount):
-            amplitude = self._sinusoid_amplitude(frame, frequency)
+            value = self._sinusoid_value(frame, frequency)
             if frame > fade_point:  # fade the end of the note
-                _old = amplitude
-                amplitude *= 1 - (frame - fade_point) / fade_frames
+                _old = value
+                value *= 1 - (frame - fade_point) / fade_frames
                 if frame % 50 == 0:
-                    self.dprint('fade from %s to %s' % (_old, amplitude))
+                    self.dprint('fade from %s to %s' % (_old, value))
             if frame < fade_frames:
-                _old = amplitude
-                amplitude *= frame / fade_frames
-            self.wavedata[frame] = amplitude
+                _old = value
+                value *= frame / fade_frames
+            self.wavedata[frame] = value
         return self.waveform
 
     def sin_linear(self, start_freq, end_freq, *args, **kwargs):
         """Sinusoid wave of linearly changing frequency."""
         self._init(*args, **kwargs)
         for frame in range(len(self.wavedata)):
-            # freq = start_freq + frame * freq_rate
-            # freq_rate = total_freq_change / framecount
             frequency = start_freq + frame * (
                 float(end_freq - start_freq) / self.framecount)
-            amplitude = self._sinusoid_amplitude(frame, frequency)
-            self.wavedata[frame] = amplitude
+            value = self._sinusoid_value(frame, frequency)
+            self.wavedata[frame] = value
         return self.waveform
 
 
