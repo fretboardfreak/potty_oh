@@ -64,15 +64,16 @@ def audify_to_file(score, tempo, filename, verbose=False):
                 note.pitch.frequency, length=note_length).frames)
 
 def audify(score, tempo, verbose=False):
-    sig_gen = PhasorGenerator(verbose=verbose)
+    sig_gen = PhasorGenerator()
     qnl = quarter_note_length(tempo)
 
     notes = score.flat.notes
     note_count = len(notes)
     for count, note in enumerate(notes):
-        print('{}/{}: at time {} for {} at "{}": {}'.format(
-              count, note_count, note.offset, note.duration.quarterLength,
-              note.pitch, note.pitch.frequency))
+        if verbose:
+            print('{}/{}: at time {} for {} at "{}": {}'.format(
+                  count, note_count, note.offset, note.duration.quarterLength,
+                  note.pitch, note.pitch.frequency))
         note_length = qnl * note.quarterLength
         sig_gen.generate(note.pitch.frequency, note_length)
     return sig_gen.waveform
