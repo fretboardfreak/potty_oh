@@ -388,7 +388,7 @@ class PhasorGenerator(object):
         Unit Conversion:
             seconds = frame / (frame / second) = second * frame / frame
         """
-        return frame / self.framerate
+        return float(frame) / float(self.framerate)
 
     def _angle(self, frame, frequency, phase):
         """Calculate sinusoid angle in radians."""
@@ -405,21 +405,23 @@ class PhasorGenerator(object):
         The phasor argument can be used to calculate the appropriate phase
         correction when transitioning between frequencies.
         """
-        return cmath.atan(phasor.imag / phasor.real)
+        return cmath.atan(phasor.imag / phasor.real).real
 
     def _calculate_phase_correction(self):
         """Calculate a new phase correction value for the new frequency."""
-        # phasor for new frequency at the last frame
-        new_phasor = self._phasor(self.last_frame, self.frequency,
-                                  self.last_phase)
-        new_phasor_arg = self._phasor_argument(new_phasor).real
-        phase_correction = self.last_phase - new_phasor_arg
-
         self.dprint('Calculating frequency phase correction...')
         self.dprint('  Looking for sinusoid value %s' %
                     self.wavedata[self.last_frame])
+        # phasor for new frequency at the last frame
+        new_phasor = self._phasor(self.last_frame, self.frequency, 0)
+        new_phasor_arg = self._phasor_argument(new_phasor)
+        phase_correction = self.last_phase - new_phasor_arg
+        self.dprint('  last phase %s, new_phasor_value %s' %
+                    (self.last_phase, new_phasor_arg))
+
         corrected_phasor = self._phasor(self.last_frame, self.frequency,
                                         phase_correction)
+        self.dprint('  corrected phasor %s' % corrected_phasor)
         self.dprint('  First swack without correction: %s' %
                     corrected_phasor.real)
         # Check whether we have the correct solution or if we need another half
@@ -449,6 +451,8 @@ class PhasorGenerator(object):
             phasor = self._phasor(frame, self.frequency, self.phase)
             self.wavedata[frame] = phasor.real
         self.last_frame = frame
+        self.last_phase = self._phasor_argument(phasor)
+        self.last_frequency = self.frequency
 
     def generate(self, frequency, length=None):
         """Generate a new note and append it to the wavedata container."""
@@ -463,5 +467,3 @@ class PhasorGenerator(object):
                 and not len(self.wavedata) <= 1):
             self._calculate_phase_correction()
         self._generate()
-        self.last_phase = self.phase
-        self.last_frequency = self.frequency
