@@ -367,14 +367,14 @@ class PhasorGenerator(object):
         self.frequency = 0
         self.phase = 0
         self.amplitude = 1  # assumed to be constant for now
-        self.cmp_precision = 1e-07
+        self.cmp_precision = 1e-05
 
     @property
     def waveform(self):
         return Waveform(self.wavedata, self.framerate)
 
     def _prep_wavedata(self):
-        new_block = numpy.zeros(self.length)
+        new_block = numpy.zeros(self.framecount + 1)
         self.wavedata = numpy.concatenate((self.wavedata, new_block))
 
     def dprint(self, msg):
@@ -394,7 +394,7 @@ class PhasorGenerator(object):
         """Calculate sinusoid angle in radians."""
         return 2 * math.pi * frequency * self._time(frame) + phase
 
-    def _phasor(self, frame, frequency, phase)):
+    def _phasor(self, frame, frequency, phase):
         """Generate a phasor in the imaginary plane for the given point."""
         return cmath.rect(self.amplitude,
                           self._angle(frame, frequency, phase))
@@ -419,25 +419,27 @@ class PhasorGenerator(object):
                                         phase_correction)
         # Check whether we have the correct solution or if we need another half
         # period for the phase correction to match up
-        if not math.isclose(self.wavedata[self.last_frame],
+        if not numpy.isclose(self.wavedata[self.last_frame],
                             corrected_phasor.real,
-                            rel_tol=self.cmp_precision):
+                            rtol=self.cmp_precision):
             phase_correction += math.pi
             corrected_phasor = self._phasor(self.last_frame, self.frequency,
                                             phase_correction)
-            if not math.isclose(self.wavedata[self.last_frame],
+            if not numpy.isclose(self.wavedata[self.last_frame],
                                 corrected_phasor.real,
-                                rel_tol=self.cmp_precision):
+                                rtol=self.cmp_precision):
                 raise Exception('Something is wrong, the correction does not '
                                 'match up.')
         self.phase = phase_correction
 
     def _generate(self):
         """Continue generating the sinusoid at the current frequency."""
+        self._prep_wavedata()
         for frame in range(self.last_frame + 1,
-                           self.last_frame + self.framecount + 1)
+                           self.last_frame + self.framecount + 1):
             phasor = self._phasor(frame, self.frequency, self.phase)
             self.wavedata[frame] = phasor.real
+        self.last_frame = frame
 
     def generate(self, frequency, length=None):
         """Generate a new note and append it to the wavedata container."""
@@ -452,3 +454,5 @@ class PhasorGenerator(object):
                 and not len(self.wavedata) <= 1):
             self._calculate_phase_correction()
         self._generate()
+        self.last_phase = self.phase
+        self.last_frequency = self.frequency
