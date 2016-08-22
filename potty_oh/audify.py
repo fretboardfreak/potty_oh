@@ -18,6 +18,7 @@ from .waveform import Waveform
 from .waveform import quarter_note_length
 from .waveform import seconds_to_frame
 from .signal_generator import Generator
+from .signal_generator import PhasorGenerator
 from .wav_file import wav_file_context
 
 
@@ -61,3 +62,17 @@ def audify_to_file(score, tempo, filename, verbose=False):
             note_length = qnl * note.quarterLength
             fout.write_frames(sig_gen.sin_constant(
                 note.pitch.frequency, length=note_length).frames)
+
+def audify(score, tempo, verbose=False):
+    sig_gen = PhasorGenerator(verbose=verbose)
+    qnl = quarter_note_length(tempo)
+
+    notes = score.flat.notes
+    note_count = len(notes)
+    for count, note in enumerate(notes):
+        print('{}/{}: at time {} for {} at "{}": {}'.format(
+              count, note_count, note.offset, note.duration.quarterLength,
+              note.pitch, note.pitch.frequency))
+        note_length = qnl * note.quarterLength
+        sig_gen.generate(note.pitch.frequency, note_length)
+    return sig_gen.waveform
