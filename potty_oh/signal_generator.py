@@ -15,6 +15,7 @@
 """A library of Audio Signal Generators for making digital noises."""
 
 import math
+import cmath
 import numpy
 from scipy import fftpack
 
@@ -311,3 +312,143 @@ class ContinuousGenerator(Generator):
             self._prep_wavedata()
             self._constant()
             self.dprint('signal is now %s long' % len(self.wavedata))
+
+
+class PhasorGenerator(object):
+    """Generate a sinusoid by simulating a phasor in the imaginary plane.
+
+    By creating an imaginary number using python's polar coordinates methods we
+    can simulate a phasor vector in the imaginary plane. By rotating the vector
+    around the origin and taking the projection of the vector onto the real
+    axis we can generate a sinusoid.
+
+    # Anchoring Phase while stepping frequency
+
+    # get value for first frame at first frequency
+    phasor = cmath.rect(amplitude, 2 * math.pi * frame * frequency / framerate)
+    phasor_argument = cmath.atan(phasor.imag / phasor.real)
+
+    sinusoid_value = phasor.real
+
+    # get phase for second frequency
+    tmp_phasor = cmath.rect(
+        amplitude, 2 * math.pi * frame * new_frequency / framerate)
+    tmp_phase_arg = cmath.atan(tmp_phasor.imag / tmp_phasor.real)
+    phase_correction = phasor_argument.real - tmp_phase_arg.real
+
+    # check phase correction
+    test_phasor = cmath.rect(
+        amplitude, (2 * math.pi * frame * new_frequency /
+                    framerate) + phase_correction)
+    if sinusoid_value != test_phasor.real:
+        # recalculate test_phasor with "phase_correction += math.pi"
+        if new_test_phasor.real != sinusoid_value:
+            raise Exception("something is wrong")
+
+    # get value for next frame at new frequency
+    new_phasor = cmath.rect(
+        amplitude, (2 * math.pi * (frame + 1) * new_frequency /
+                    framerate) + phase_correction)
+
+
+    """
+    def __init__(self, length=None, framerate=None, verbose=False):
+        self.length = length
+        if not length:
+            self.length = defaults.length
+        self.framerate = framerate
+        if not framerate:
+            self.framerate = defaults.framerate
+        self.verbose = verbose
+        self.wavedata = numpy.zeros(1)
+        self.last_frame = -1
+        self.last_phase = 0
+        self.last_frequency = 0
+        self.frequency = 0
+        self.phase = 0
+        self.amplitude = 1  # assumed to be constant for now
+        self.cmp_precision = 1e-07
+
+    @property
+    def waveform(self):
+        return Waveform(self.wavedata, self.framerate)
+
+    def _prep_wavedata(self):
+        new_block = numpy.zeros(self.length)
+        self.wavedata = numpy.concatenate((self.wavedata, new_block))
+
+    def dprint(self, msg):
+        """Conditionally print a debugging message."""
+        if self.verbose:
+            print(msg)
+
+    def _time(self, frame):
+        """Convert wavedata frame units to seconds.
+
+        Unit Conversion:
+            seconds = frame / (frame / second) = second * frame / frame
+        """
+        return frame / self.framerate
+
+    def _angle(self, frame, frequency, phase):
+        """Calculate sinusoid angle in radians."""
+        return 2 * math.pi * frequency * self._time(frame) + phase
+
+    def _phasor(self, frame, frequency, phase)):
+        """Generate a phasor in the imaginary plane for the given point."""
+        return cmath.rect(self.amplitude,
+                          self._angle(frame, frequency, phase))
+
+    def _phasor_argument(self, phasor):
+        """Calculate the phasor argument.
+
+        The phasor argument can be used to calculate the appropriate phase
+        correction when transitioning between frequencies.
+        """
+        return cmath.atan(phasor.imag / phasor.real)
+
+    def _calculate_phase_correction(self):
+        """Calculate a new phase correction value for the new frequency."""
+        # phasor for new frequency at the last frame
+        new_phasor = self._phasor(self.last_frame, self.frequency,
+                                  self.last_phase)
+        new_phasor_arg = self._phasor_argument(new_phasor).real
+        phase_correction = self.last_phase - new_phasor_arg
+
+        corrected_phasor = self._phasor(self.last_frame, self.frequency,
+                                        phase_correction)
+        # Check whether we have the correct solution or if we need another half
+        # period for the phase correction to match up
+        if not math.isclose(self.wavedata[self.last_frame],
+                            corrected_phasor.real,
+                            rel_tol=self.cmp_precision):
+            phase_correction += math.pi
+            corrected_phasor = self._phasor(self.last_frame, self.frequency,
+                                            phase_correction)
+            if not math.isclose(self.wavedata[self.last_frame],
+                                corrected_phasor.real,
+                                rel_tol=self.cmp_precision):
+                raise Exception('Something is wrong, the correction does not '
+                                'match up.')
+        self.phase = phase_correction
+
+    def _generate(self):
+        """Continue generating the sinusoid at the current frequency."""
+        for frame in range(self.last_frame + 1,
+                           self.last_frame + self.framecount + 1)
+            phasor = self._phasor(frame, self.frequency, self.phase)
+            self.wavedata[frame] = phasor.real
+
+    def generate(self, frequency, length=None):
+        """Generate a new note and append it to the wavedata container."""
+        self.frequency = frequency
+        if length:
+            self.length = length
+            # framecount = frames / sec * sec
+            self.framecount = int(self.framerate * self.length)
+            # rectify length to actual framecount
+            self.length = float(self.framecount) / self.framerate
+        if (self.frequency != self.last_frequency
+                and not len(self.wavedata) <= 1):
+            self._calculate_phase_correction()
+        self._generate()
