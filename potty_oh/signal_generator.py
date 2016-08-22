@@ -415,22 +415,31 @@ class PhasorGenerator(object):
         new_phasor_arg = self._phasor_argument(new_phasor).real
         phase_correction = self.last_phase - new_phasor_arg
 
+        self.dprint('Calculating frequency phase correction...')
+        self.dprint('  Looking for sinusoid value %s' %
+                    self.wavedata[self.last_frame])
         corrected_phasor = self._phasor(self.last_frame, self.frequency,
                                         phase_correction)
+        self.dprint('  First swack without correction: %s' %
+                    corrected_phasor.real)
         # Check whether we have the correct solution or if we need another half
         # period for the phase correction to match up
         if not numpy.isclose(self.wavedata[self.last_frame],
                             corrected_phasor.real,
                             rtol=self.cmp_precision):
+            self.dprint('  Not close enough, adding 1/2 a period.')
             phase_correction += math.pi
             corrected_phasor = self._phasor(self.last_frame, self.frequency,
                                             phase_correction)
+            self.dprint('  New correction: %s' % corrected_phasor.real)
             if not numpy.isclose(self.wavedata[self.last_frame],
                                 corrected_phasor.real,
                                 rtol=self.cmp_precision):
                 raise Exception('Something is wrong, the correction does not '
                                 'match up.')
         self.phase = phase_correction
+        self.dprint('  New phase correction for freq %s set to %s' %
+                    (self.frequency, self.phase))
 
     def _generate(self):
         """Continue generating the sinusoid at the current frequency."""
