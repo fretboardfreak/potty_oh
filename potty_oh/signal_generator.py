@@ -416,13 +416,10 @@ class PhasorGenerator(object):
         new_phasor = self._phasor(self.last_frame, self.frequency, 0)
         new_phasor_arg = self._phasor_argument(new_phasor)
         phase_correction = self.last_phase - new_phasor_arg
-        self.dprint('  last phase %s, new_phasor_value %s' %
-                    (self.last_phase, new_phasor_arg))
 
         corrected_phasor = self._phasor(self.last_frame, self.frequency,
                                         phase_correction)
-        self.dprint('  corrected phasor %s' % corrected_phasor)
-        self.dprint('  First swack without correction: %s' %
+        self.dprint('  First try at correction: %s' %
                     corrected_phasor.real)
         # Check whether we have the correct solution or if we need another half
         # period for the phase correction to match up
