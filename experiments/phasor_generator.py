@@ -26,7 +26,7 @@ def main():
     common.ParserArguments.length(parser)
     common.ParserArguments.set_defaults(parser, type='constant')
 
-    default_freqs = [300, 800]
+    default_freqs = [300, 800, 400, 1200]
     parser.add_argument(
         '-f', '--frequencies', action='append', dest='freqs', type=float,
         default=[], help="Specify the frequencies to use. Defaults to "
