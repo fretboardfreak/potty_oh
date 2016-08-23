@@ -6,6 +6,8 @@ Potty-Oh: Python Audio
     - https://github.com/fretboardfreak/potty_oh
     - https://bitbucket.org/fret/potty_oh
 
+Official Project Website: www.fretboardfreak.com/potty_oh
+
 Potty-Oh is the result of my exploration into audio waveforms and how to
 program various manipulations of audio. The project consists of the Potty-Oh
 python library and a set of experiments using the library.
