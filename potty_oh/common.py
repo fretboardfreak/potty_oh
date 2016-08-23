@@ -131,7 +131,7 @@ class ParserArguments(object):
 def dprint(msg):
     """Conditionally print a debug message."""
     if defaults.debug:
-        print(msg)
+        print('debug: %s' % msg)
 
 
 def vprint(msg):
